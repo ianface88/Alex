@@ -378,61 +378,20 @@ export default function App() {
             </div>
           </div>
 
-          {/* Model Status Bar with Interactive Engine Toggle */}
-          <div className="flex flex-col sm:flex-row items-center gap-3 bg-slate-900/95 border border-slate-800/80 rounded-2xl sm:rounded-full p-2 sm:py-1.5 sm:px-4 text-xs w-full sm:w-auto">
+          {/* Model Status Bar with Free FLUX Engine Indicator */}
+          <div className="flex items-center gap-3 bg-slate-900/95 border border-slate-800/80 rounded-full py-2 px-4 text-xs w-full sm:w-auto justify-between sm:justify-start">
             <div className="flex items-center gap-2">
               <span className="flex h-2 w-2 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
               <span className="text-slate-400 font-medium">Studio Engine:</span>
+              <span className="font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-900/30 px-2 py-0.5 rounded-lg">FLUX (Free & Unlimited)</span>
             </div>
 
-            {/* Interactive Engine Switcher */}
-            <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-850/80 w-full sm:w-auto justify-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedEngine("free");
-                  setErrorMessage(null);
-                  setIsQuotaExceeded(false);
-                }}
-                className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg font-bold transition-all text-[10px] uppercase tracking-wider cursor-pointer text-center ${
-                  selectedEngine === "free"
-                    ? "bg-gradient-to-r from-pink-600 to-indigo-600 text-white shadow-md shadow-indigo-600/10"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
-                }`}
-              >
-                Free Studio (FLUX)
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedEngine("gemini");
-                  setErrorMessage(null);
-                  setIsQuotaExceeded(false);
-                }}
-                className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg font-bold transition-all text-[10px] uppercase tracking-wider cursor-pointer text-center flex items-center justify-center gap-1 ${
-                  selectedEngine === "gemini"
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
-                }`}
-              >
-                Gemini (Imagen)
-              </button>
-            </div>
-
-            <span className="font-mono text-indigo-400 font-semibold bg-indigo-950/50 px-2 py-0.5 rounded border border-indigo-900/30 hidden md:inline-block">
-              {selectedEngine === "free" ? "FLUX-FREE" : activeQuality.model.split("/").pop()}
+            <span className="font-mono text-slate-500 text-[10px] hidden md:inline-block">
+              100% Keyless Studio
             </span>
-            
-            {/* Secrets tip */}
-            <div className="group relative hidden sm:block">
-              <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-200 cursor-help" />
-              <div className="absolute right-0 top-full mt-2 hidden group-hover:block bg-slate-900 border border-slate-700 text-slate-300 p-3 rounded-lg w-64 shadow-xl z-50 text-xs leading-relaxed">
-                Choose the <strong>Free Studio Engine</strong> for keyless, unlimited art generation or <strong>Gemini</strong> (requires a billable key).
-              </div>
-            </div>
           </div>
 
         </div>
@@ -441,18 +400,7 @@ export default function App() {
       {/* Main Workspace */}
       <main id="app_main" className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:py-8">
         
-        {/* Banner Informational note */}
-        {selectedEngine === "gemini" && selectedQualityId !== "standard" && (
-          <div className="mb-6 bg-amber-950/30 border border-amber-900/50 text-amber-200 rounded-xl p-4 flex gap-3 text-sm items-start">
-            <Key className="w-5 h-5 text-amber-400 shrink-0 mt-0.5 animate-bounce" />
-            <div>
-              <p className="font-semibold">Paid API Key Recommendation</p>
-              <p className="text-amber-300/90 mt-0.5">
-                Generating with High Quality or Ultra Detail sizes requires your own Google developer billable API key. If generation fails, please verify your keys in AI Studio Secrets, or keep quality at <strong>Standard Quality</strong> (powered by <code>gemini-3.1-flash-lite-image</code>).
-              </p>
-            </div>
-          </div>
-        )}
+
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
@@ -582,85 +530,39 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Box 3: Proportion & Resolution config */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Box 3: Dimensions & Proportion Config (Pruned of all paid options) */}
+              <div className="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-5 sm:p-6 backdrop-blur-sm space-y-4">
+                <label className="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                  <span className="w-1.5 h-4 bg-indigo-500 rounded-full" />
+                  3. Dimensions / Aspect Ratio
+                </label>
                 
-                {/* Aspect ratio selector */}
-                <div className="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-5 sm:p-6 backdrop-blur-sm space-y-4">
-                  <label className="text-sm font-semibold text-slate-200 flex items-center gap-2">
-                    <span className="w-1.5 h-4 bg-indigo-500 rounded-full" />
-                    3. Dimensions / Aspect Ratio
-                  </label>
-                  
-                  <div className="grid grid-cols-2 gap-2">
-                    {ASPECT_RATIOS.map((ratio) => {
-                      const isSelected = selectedRatioId === ratio.id;
-                      return (
-                        <button
-                          key={ratio.id}
-                          type="button"
-                          onClick={() => setSelectedRatioId(ratio.id)}
-                          className={`flex items-center gap-3 p-2.5 rounded-xl border text-xs font-medium transition ${
-                            isSelected
-                              ? "bg-indigo-950/40 border-indigo-500/80 text-white"
-                              : "bg-slate-950/40 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/30 text-slate-400 hover:text-slate-200"
-                          }`}
-                        >
-                          {/* Mini ratio preview */}
-                          <div className="w-10 h-10 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center shrink-0">
-                            <div className={`bg-indigo-500/50 border border-indigo-400 rounded ${ratio.widthClass} ${ratio.heightClass} shadow-inner`} />
-                          </div>
-                          <span>{ratio.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+                  {ASPECT_RATIOS.map((ratio) => {
+                    const isSelected = selectedRatioId === ratio.id;
+                    return (
+                      <button
+                        key={ratio.id}
+                        type="button"
+                        onClick={() => setSelectedRatioId(ratio.id)}
+                        className={`flex flex-col sm:flex-row items-center gap-3 p-3 rounded-xl border text-xs font-medium transition cursor-pointer ${
+                          isSelected
+                            ? "bg-indigo-950/40 border-indigo-500/85 text-white shadow-md shadow-indigo-600/5"
+                            : "bg-slate-950/40 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/30 text-slate-400 hover:text-slate-200"
+                        }`}
+                      >
+                        {/* Mini ratio preview */}
+                        <div className="w-10 h-10 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center shrink-0">
+                          <div className={`bg-indigo-500/50 border border-indigo-400 rounded ${ratio.widthClass} ${ratio.heightClass} shadow-inner`} />
+                        </div>
+                        <div className="text-center sm:text-left">
+                          <p className="font-bold text-[11px] text-slate-200">{ratio.ratio}</p>
+                          <p className="text-[9px] text-slate-500 font-normal">{ratio.label.split(" ").slice(1).join(" ")}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
-
-                {/* Quality options */}
-                <div className="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-5 sm:p-6 backdrop-blur-sm space-y-4">
-                  <label className="text-sm font-semibold text-slate-200 flex items-center gap-2">
-                    <span className="w-1.5 h-4 bg-indigo-500 rounded-full" />
-                    4. Render Quality
-                  </label>
-
-                  <div className="space-y-2">
-                    {QUALITY_OPTIONS.map((opt) => {
-                      const isSelected = selectedQualityId === opt.id;
-                      return (
-                        <button
-                          key={opt.id}
-                          type="button"
-                          onClick={() => setSelectedQualityId(opt.id)}
-                          className={`w-full text-left p-2.5 rounded-xl border transition flex items-start gap-3 relative ${
-                            isSelected
-                              ? "bg-indigo-950/40 border-indigo-500/80 text-white"
-                              : "bg-slate-950/40 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/30 text-slate-400 hover:text-slate-200"
-                          }`}
-                        >
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-semibold">{opt.label}</span>
-                              {opt.badge && (
-                                <span className={`text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                                  opt.id === "standard" 
-                                    ? "bg-emerald-950/50 text-emerald-400 border border-emerald-900/40"
-                                    : "bg-amber-950/50 text-amber-400 border border-amber-900/40"
-                                }`}>
-                                  {opt.badge}
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-[10px] text-slate-400/90 mt-0.5 leading-normal">
-                              {opt.description}
-                            </p>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
               </div>
 
               {/* Collapsible expanded prompt view to see "magic" under the hood */}

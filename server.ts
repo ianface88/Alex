@@ -55,7 +55,7 @@ function getDimensionsForRatio(aspectRatio: string) {
 // API Routes
 app.post("/api/generate-image", async (req, res) => {
   try {
-    const { prompt, enhancedPrompt, aspectRatio = "1:1", quality = "standard", engine = "free" } = req.body;
+    const { prompt, enhancedPrompt, aspectRatio = "1:1" } = req.body;
 
     if (!prompt) {
       return res.status(400).json({ error: "Prompt is required" });
@@ -63,113 +63,26 @@ app.post("/api/generate-image", async (req, res) => {
 
     const promptToSend = enhancedPrompt || prompt;
     
-    // Auto-detect if we must fallback to the free engine
-    const useFreeEngine = engine === "free" || !process.env.GEMINI_API_KEY;
-
-    if (useFreeEngine) {
-      console.log(`Generating image using Free FLUX Engine. Prompt: "${promptToSend}"`);
-      const { width, height } = getDimensionsForRatio(aspectRatio);
-      const randomSeed = Math.floor(Math.random() * 10000000);
-      
-      const pollUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptToSend)}?width=${width}&height=${height}&nologo=true&private=true&seed=${randomSeed}`;
-      
-      const pollResponse = await fetch(pollUrl);
-      if (!pollResponse.ok) {
-        throw new Error(`Free Engine (Pollinations.ai) returned status ${pollResponse.status}`);
-      }
-      
-      const arrayBuffer = await pollResponse.arrayBuffer();
-      const base64Image = Buffer.from(arrayBuffer).toString("base64");
-      const imageUrl = `data:image/png;base64,${base64Image}`;
-      
-      return res.json({
-        success: true,
-        imageUrl,
-        model: "flux-free",
-        quality,
-        aspectRatio,
-        timestamp: new Date().toISOString(),
-        prompt: prompt,
-        enhancedPrompt: promptToSend,
-      });
+    console.log(`Generating image using Free FLUX Engine. Prompt: "${promptToSend}"`);
+    const { width, height } = getDimensionsForRatio(aspectRatio);
+    const randomSeed = Math.floor(Math.random() * 10000000);
+    
+    const pollUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptToSend)}?width=${width}&height=${height}&nologo=true&private=true&seed=${randomSeed}`;
+    
+    const pollResponse = await fetch(pollUrl);
+    if (!pollResponse.ok) {
+      throw new Error(`Free Engine (Pollinations.ai) returned status ${pollResponse.status}`);
     }
-
-    const ai = getGeminiClient();
-
-    // Select the model and configuration based on requested quality
-    // Standard -> gemini-3.1-flash-lite-image
-    // High -> gemini-3.1-flash-image (supports 1K)
-    // Ultra -> gemini-3.1-flash-image (supports 2K)
-    let model = "gemini-3.1-flash-lite-image";
-    let imageSize: string | undefined = undefined;
-
-    if (quality === "high") {
-      model = "gemini-3.1-flash-image";
-      imageSize = "1K";
-    } else if (quality === "ultra") {
-      model = "gemini-3.1-flash-image";
-      imageSize = "2K";
-    }
-
-    const config: any = {
-      imageConfig: {
-        aspectRatio: aspectRatio,
-      },
-    };
-
-    if (imageSize && model === "gemini-3.1-flash-image") {
-      config.imageConfig.imageSize = imageSize;
-    }
-
-    console.log(`Generating image using model "${model}" with prompt: "${promptToSend}" and config:`, config);
-
-    const response = await ai.models.generateContent({
-      model: model,
-      contents: {
-        parts: [
-          {
-            text: promptToSend,
-          },
-        ],
-      },
-      config: config,
-    });
-
-    // Extract the image base64 data
-    let base64Image: string | null = null;
-    let feedbackText: string | null = null;
-
-    if (
-      response &&
-      response.candidates &&
-      response.candidates[0] &&
-      response.candidates[0].content &&
-      response.candidates[0].content.parts
-    ) {
-      for (const part of response.candidates[0].content.parts) {
-        if (part.inlineData && part.inlineData.data) {
-          base64Image = part.inlineData.data;
-        } else if (part.text) {
-          feedbackText = part.text;
-        }
-      }
-    }
-
-    if (!base64Image) {
-      console.error("Gemini response did not contain image data. Full response:", JSON.stringify(response));
-      return res.status(500).json({
-        error: "Failed to generate image. No image data returned from Gemini.",
-        feedback: feedbackText,
-      });
-    }
-
+    
+    const arrayBuffer = await pollResponse.arrayBuffer();
+    const base64Image = Buffer.from(arrayBuffer).toString("base64");
     const imageUrl = `data:image/png;base64,${base64Image}`;
-
-    res.json({
+    
+    return res.json({
       success: true,
       imageUrl,
-      model,
-      quality,
+      model: "FLUX-Studio",
+      quality: "standard",
       aspectRatio,
       timestamp: new Date().toISOString(),
       prompt: prompt,
@@ -177,27 +90,11 @@ app.post("/api/generate-image", async (req, res) => {
     });
   } catch (error: any) {
     console.error("Error generating image:", error);
-    
-    const errorMessage = error.message || "";
-    let isQuotaError = false;
-    let customMessage = errorMessage;
-
-    if (
-      errorMessage.includes("RESOURCE_EXHAUSTED") ||
-      errorMessage.includes("quota") ||
-      errorMessage.includes("Quota exceeded") ||
-      errorMessage.includes("limit: 0") ||
-      errorMessage.includes("429")
-    ) {
-      isQuotaError = true;
-      customMessage = "Your Gemini API key doesn't have quota for image generation (free keys have 0 quota for images). To resolve this, please set up a paid billable API key by clicking 'Set Up Paid Key' in the top-right status bar or configure it in AI Studio settings.";
-    }
-
     res.status(500).json({
       success: false,
-      error: customMessage,
-      isQuotaError,
-      originalError: errorMessage
+      error: error.message || "An error occurred during image generation.",
+      isQuotaError: false,
+      originalError: error.message
     });
   }
 });

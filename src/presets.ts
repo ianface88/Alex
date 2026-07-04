@@ -20,6 +20,78 @@ export const STYLE_PRESETS: StylePreset[] = [
     examplePrompt: "An elderly weathered fisherman looking directly into the camera on a foggy pier"
   },
   {
+    id: "acrylic-palette",
+    name: "Acrylic Palette Knife",
+    description: "Rich, textured dimensional impasto acrylic blobs, heavy tool scrapes, and layered glossy paints.",
+    category: "Artistic",
+    promptEnhancement: ", heavy impasto acrylic palette knife painting, thick textured paint layers, colorful visible palette knife strokes, high-relief paint texture, vibrant fine art masterpiece, expressive canvas",
+    icon: "Paintbrush",
+    examplePrompt: "A field of vibrant red poppies under a turbulent blue sky"
+  },
+  {
+    id: "risograph-print",
+    name: "Retro Risograph Print",
+    description: "Charming misaligned layered ink textures, organic speckle grain, and warm duotone retro pastel colors.",
+    category: "Retro",
+    promptEnhancement: ", retro risograph print, multi-layered ink print, texture overlay, slight registration misalignment, organic halftone dot grain, vibrant limited color palette, clean graphic design poster",
+    icon: "Image",
+    examplePrompt: "An elegant cat sitting on a windowsill overlooking a crescent moon"
+  },
+  {
+    id: "japanese-woodblock",
+    name: "Japanese Woodblock (Ukiyo-e)",
+    description: "Classic hand-carved block prints with graceful ink lines, gradient sky washes, and organic aged washi paper textures.",
+    category: "Illustration",
+    promptEnhancement: ", ukiyo-e style, classic Japanese woodblock print, elegant black ink outlines, flat color fields, organic aged washi paper texture, traditional woodblock printing style, masterwork illustration",
+    icon: "Brush",
+    examplePrompt: "A majestic crane bird standing in front of a giant red sun"
+  },
+  {
+    id: "stained-glass",
+    name: "Stained Glass Window",
+    description: "Luminous translucent colored glass panels separated by thick, intricate dark lead outlines.",
+    category: "Artistic",
+    promptEnhancement: ", exquisite stained glass window, luminous colored glass mosaics, glowing light passing through glass panels, thick dark lead outlines, medieval gothic cathedral style, radiant colors",
+    icon: "Palette",
+    examplePrompt: "A majestic roaring lion surrounded by celestial golden stars"
+  },
+  {
+    id: "art-nouveau",
+    name: "Art Nouveau Elegance",
+    description: "Flowing organic whip-lash lines, decorative botanical scrollwork, and elegant golden-era illustrations.",
+    category: "Illustration",
+    promptEnhancement: ", elegant art nouveau poster, Alphonse Mucha style, flowing curvilinear lines, intricate botanical scrollwork and frames, ornate decorative motifs, soft pastel colors, vintage masterpiece, gold foil accents",
+    icon: "PenTool",
+    examplePrompt: "A beautiful celestial woman with long flowing hair holding the solar system"
+  },
+  {
+    id: "surrealist-dali",
+    name: "Surrealist Dali Dream",
+    description: "Melting clocks, desert horizons, impossible physical geometries, and high-contrast symbolic dreamscapes.",
+    category: "Artistic",
+    promptEnhancement: ", surrealist painting in the style of Salvador Dali, melting clocks and bizarre dreamlike structures, infinite barren desert horizon, high-contrast long shadows, impossible physics, metaphysical atmosphere",
+    icon: "Orbit",
+    examplePrompt: "A giant chess board stretching into a golden ocean under an orange sky"
+  },
+  {
+    id: "charcoal-sketch",
+    name: "Gothic Charcoal Sketch",
+    description: "Dramatic high-contrast charcoal smudges, rich cotton paper grains, and deep expressive hand-drawn shadows.",
+    category: "Artistic",
+    promptEnhancement: ", dramatic chiaroscuro charcoal sketch, hand-drawn charcoal smudges on textured warm cotton paper, raw graphite lines, deep expressive shadow gradients, textured fine art drawing",
+    icon: "PenTool",
+    examplePrompt: "A mysterious old lighthouse standing against a massive stormy wave"
+  },
+  {
+    id: "bismuth-crystal",
+    name: "Bismuth Iridescence",
+    description: "Stunning geometric metallic stair-stepped rainbow crystals with futuristic architectural alignments.",
+    category: "Artistic",
+    promptEnhancement: ", futuristic iridescent bismuth crystal landscape, stair-stepped metallic crystal geometries, beautiful rainbow light refraction, metallic sheen, dark obsidian ground, alien mineral formations",
+    icon: "Sparkles",
+    examplePrompt: "A futuristic crystalline temple complex carved into a canyon"
+  },
+  {
     id: "cyberpunk",
     name: "Cyberpunk Neon",
     description: "Futuristic neon-drenched cityscape with wet streets, holographic advertising, and heavy synthwave coloring.",
@@ -93,12 +165,39 @@ export const STYLE_PRESETS: StylePreset[] = [
   },
   {
     id: "vaporwave",
-    name: "80s Vaporwave Sunset",
-    description: "Nostalgic grid plains, magenta horizons, 3D classical busts, and vintage VHS analog artifacts.",
+    name: "Classic 80s Vaporwave",
+    description: "Nostalgic 1985 glitch aesthetic: classical marble statues, checkerboard floors, Windows 95 icons, floppy disks, and tropical palm leaves. No sunset.",
     category: "Retro",
-    promptEnhancement: ", retro vaporwave aesthetic, glowing wireframe wire grid landscape, low-poly 3D classical marble bust, retro-futuristic pink sun setting, VHS tracking artifacts, magenta and cyan neon sky, surreal dreamscape",
-    icon: "Sun",
-    examplePrompt: "A lone dolphin jumping over a wireframe grid ocean with a purple sun"
+    promptEnhancement: ", classic 1980s vaporwave design aesthetic, elegant Roman marble statue bust, high-contrast black and pink checkerboard floor grid, retro Windows 95 operating system popup dialog boxes, neon teal and hot magenta colors, pink floppy disks, palm leaves, vintage VHS tracking static overlay, surreal digital collage art style, strictly no sunset, no sun",
+    icon: "Image",
+    examplePrompt: "A Greco-Roman marble statue wearing neon green sunglasses standing next to a vintage CRT computer screen and floppy disks"
+  },
+  {
+    id: "pop-art",
+    name: "Andy Warhol Pop Art",
+    description: "Bold silkscreen prints, vibrant complementary color block partitions, and retro comic halftone dot patterns.",
+    category: "Artistic",
+    promptEnhancement: ", andy warhol pop art style, bold silkscreen print, high-contrast saturated primary colors, visible halftone dot texture overlay, retro printmaking, graphic illustration, soup-can pop era aesthetic, dramatic block outlines",
+    icon: "Palette",
+    examplePrompt: "A cool bulldog wearing a leather jacket, rendered in a 4-panel multi-color pop art collage"
+  },
+  {
+    id: "botanical-vintage",
+    name: "Vintage Botanical",
+    description: "Delicate ink stippling, antique hand-colored watercolor shading, and aged parchment paper backgrounds.",
+    category: "Illustration",
+    promptEnhancement: ", vintage botanical illustration style, highly detailed hand-drawn ink lines, delicate watercolor washes, stippling shading, antique faded parchment paper texture, academic flora classification plate design, aged and historic",
+    icon: "PenTool",
+    examplePrompt: "A detailed wild rose flower showing its petals, leaves, stem, and root structure"
+  },
+  {
+    id: "chalk-art",
+    name: "Chalkboard Chalk Art",
+    description: "Incredibly intricate white and colored chalk sketches hand-drawn on dusty, dark slate chalkboard backgrounds.",
+    category: "Artistic",
+    promptEnhancement: ", gorgeous chalkboard art, realistic hand-drawn chalk illustration, dusty slate blackboard background with light chalk residue, intricate white and colored chalk strokes, chalkboard lettering art, high-contrast sketch",
+    icon: "Brush",
+    examplePrompt: "A steaming mug of hot chocolate topped with marshmallows and beautiful cursive lettering saying 'Warm & Cozy'"
   },
   {
     id: "minimalist-line",
@@ -135,19 +234,5 @@ export const QUALITY_OPTIONS: QualityOption[] = [
     model: "gemini-3.1-flash-lite-image",
     description: "Lightning fast generation, great for quick ideas and drafts.",
     badge: "Fast & Free"
-  },
-  {
-    id: "high",
-    label: "High Quality (1K)",
-    model: "gemini-3.1-flash-image",
-    description: "Denser textures and fine details in full 1K (1024px) size.",
-    badge: "Paid Key Required"
-  },
-  {
-    id: "ultra",
-    label: "Ultra Detail (2K)",
-    model: "gemini-3.1-flash-image",
-    description: "Maximum complexity and sharpness, perfect for wallpapers (2048px).",
-    badge: "Paid Key Required"
   }
 ];
