@@ -1,0 +1,6 @@
+{
+  "name": "Alex's StudioCraft",
+  "description": "An elegant, personalized creative canvas playground for Alex to play with, powered by Gemini 3.1 neural image generation and hand-crafted artistic style presets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
