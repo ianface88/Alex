@@ -1307,10 +1307,7 @@ export default function App() {
       {/* FOOTER */}
       <footer id="app_footer" className="mt-16 border-t border-slate-900 bg-slate-950/40 py-8 text-center text-xs text-slate-500 space-y-2">
         <p>
-          Powered by <strong className="text-slate-400">Gemini 3.1 Neural Models</strong> & official <strong>@google/genai</strong> SDK.
-        </p>
-        <p className="text-[10px] text-slate-600 font-mono">
-          All image data stays private, securely loaded locally, with secrets safely guarded on server routes.
+          Alex can be a pain in Ian's ass but he loves her anyway
         </p>
       </footer>
 
