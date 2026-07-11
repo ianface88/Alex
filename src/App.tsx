@@ -126,96 +126,7 @@ const PresetIcon = ({ name, className = "w-5 h-5" }: { name: string; className?:
   }
 };
 
-// Hardware-accelerated Particle Overlay Canvas Component
-function ParticleCanvas({ style, speed }: { style: "cinematic-zoom" | "retro-pan" | "orbital-drift" | "liquid-shimmer" | "cosmic-nebula"; speed: number }) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let width = (canvas.width = canvas.offsetWidth || 400);
-    let height = (canvas.height = canvas.offsetHeight || 400);
-
-    const resizeObserver = new ResizeObserver(() => {
-      if (canvas) {
-        width = canvas.width = canvas.offsetWidth;
-        height = canvas.height = canvas.offsetHeight;
-      }
-    });
-    resizeObserver.observe(canvas);
-
-    // Particles array
-    const particles: any[] = [];
-    const count = style === "cosmic-nebula" ? 45 : style === "retro-pan" ? 25 : 20;
-
-    for (let i = 0; i < count; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        size: Math.random() * 1.8 + 0.5,
-        speedX: (Math.random() * 0.3 - 0.15) * speed,
-        speedY: (style === "retro-pan" ? 0 : (Math.random() * 0.25 + 0.05)) * speed,
-        alpha: Math.random() * 0.5 + 0.2,
-        color: style === "retro-pan" ? "rgba(244, 63, 94, " : style === "cosmic-nebula" ? "rgba(168, 85, 247, " : "rgba(255, 255, 255, ",
-      });
-    }
-
-    const draw = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      // Special retro perspective scanlines / grid
-      if (style === "retro-pan") {
-        ctx.strokeStyle = "rgba(99, 102, 241, 0.12)";
-        ctx.lineWidth = 1;
-        const lineOffset = (Date.now() / 60) % 20;
-        for (let y = lineOffset; y < height; y += 20) {
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          ctx.lineTo(width, y);
-          ctx.stroke();
-        }
-      }
-
-      particles.forEach((p) => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `${p.color}${p.alpha})`;
-        ctx.fill();
-
-        // Move
-        p.x += p.speedX;
-        p.y += p.speedY;
-
-        // Boundaries warp
-        if (p.x < 0) p.x = width;
-        if (p.x > width) p.x = 0;
-        if (p.y < 0) p.y = height;
-        if (p.y > height) p.y = 0;
-
-        // Oscillate transparency
-        p.alpha += Math.random() * 0.04 - 0.02;
-        if (p.alpha < 0.1) p.alpha = 0.1;
-        if (p.alpha > 0.7) p.alpha = 0.7;
-      });
-
-      animationFrameId = requestAnimationFrame(draw);
-    };
-
-    draw();
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      resizeObserver.disconnect();
-    };
-  }, [style, speed]);
-
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-10" />;
-}
-
+// Get preset icon by name
 export default function App() {
   const [prompt, setPrompt] = useState("");
   const [selectedPresetId, setSelectedPresetId] = useState("none");
@@ -236,19 +147,7 @@ export default function App() {
   const [lightboxImage, setLightboxImage] = useState<GeneratedImage | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Studio Animation & Veo 3.1 States
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
-  const [animationStyle, setAnimationStyle] = useState<"cinematic-zoom" | "retro-pan" | "orbital-drift" | "liquid-shimmer" | "cosmic-nebula">("cinematic-zoom");
-  const [motionPrompt, setMotionPrompt] = useState("");
-  const [activeSoundtrack, setActiveSoundtrack] = useState<"none" | "synthwave" | "lofi" | "cosmic">("none");
-  const [isPlayingAnimation, setIsPlayingAnimation] = useState(false);
-  const [animationSpeed, setAnimationSpeed] = useState<number>(1.0);
-  const [showParticles, setShowParticles] = useState(true);
-  const [videoApiMessage, setVideoApiMessage] = useState<string | null>(null);
-  const [showAnimationPanel, setShowAnimationPanel] = useState(false);
-
-  // Web Audio Synth References
+  // Audio References
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioNodesRef = useRef<any[]>([]);
   const audioTimerIdRef = useRef<any>(null);
@@ -486,15 +385,6 @@ export default function App() {
     }
   };
 
-  useEffect(() => {
-    if (isPlayingAnimation && activeSoundtrack !== "none") {
-      playLofiSynthesizer(activeSoundtrack);
-    } else {
-      stopSynthesizer();
-    }
-    return () => stopSynthesizer();
-  }, [isPlayingAnimation, activeSoundtrack]);
-
   // Get active preset
   const activePreset = STYLE_PRESETS.find(p => p.id === selectedPresetId) || STYLE_PRESETS[0];
 
@@ -548,11 +438,6 @@ export default function App() {
     setIsGenerating(true);
     setErrorMessage(null);
     setIsQuotaExceeded(false);
-    
-    // Reset any previous active animation states
-    setIsPlayingAnimation(false);
-    setVideoApiMessage(null);
-    setShowAnimationPanel(false);
 
     // Scroll to results container on mobile for better UX
     setTimeout(() => {
@@ -600,68 +485,6 @@ export default function App() {
       setErrorMessage(err.message || "An unexpected error occurred while communicating with Gemini.");
     } finally {
       setIsGenerating(false);
-    }
-  };
-
-  // Trigger Veo 3.1 & Cinematic Motion Engine call
-  const handleAnimateImage = async () => {
-    if (!activeImage) return;
-    setIsGeneratingVideo(true);
-    setVideoApiMessage(null);
-
-    try {
-      const response = await fetch("/api/generate-video", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: activeImage.prompt,
-          imageUrl: activeImage.url,
-          motionPrompt: motionPrompt || `${animationStyle} camera movement`,
-          aspectRatio: activeImage.aspectRatio,
-          duration: 5,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || "Failed to trigger motion engine.");
-      }
-
-      // If the model was simulated, display the nice status overlay
-      if (data.simulated) {
-        setVideoApiMessage(data.message);
-      } else {
-        setVideoApiMessage("Successfully rendered high-definition motion video using Veo 3.1!");
-      }
-
-      // Update the active image with animation characteristics
-      const updatedImage = {
-        ...activeImage,
-        isAnimated: true,
-        animationStyle,
-        animationUrl: data.videoUrl || undefined, // Real URL if generated, otherwise undefined (triggers live CSS/Canvas)
-      };
-
-      setActiveImage(updatedImage);
-      setIsPlayingAnimation(true);
-
-      // Also update history & saved lists to persist animation attributes
-      const updatedHistory = history.map(item => item.id === activeImage.id ? updatedImage : item);
-      saveHistory(updatedHistory);
-
-      const isSaved = savedImages.some(img => img.id === activeImage.id);
-      if (isSaved) {
-        const updatedSaved = savedImages.map(img => img.id === activeImage.id ? updatedImage : img);
-        setSavedImages(updatedSaved);
-        localStorage.setItem("alex_saved_masterpieces", JSON.stringify(updatedSaved));
-      }
-
-    } catch (err: any) {
-      console.error(err);
-      setErrorMessage(err.message || "Failed to initiate cinematic animation.");
-    } finally {
-      setIsGeneratingVideo(false);
     }
   };
 
@@ -1129,94 +952,17 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 3. Render Image & Motion Player */}
+                {/* 3. Render Image */}
                 {activeImage && !isGenerating && (
                   <div className="w-full flex flex-col items-center justify-center space-y-4">
                     <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-900 shadow-2xl w-full max-w-lg aspect-square flex items-center justify-center">
                       
-                      {activeImage.animationUrl ? (
-                        <video
-                          src={activeImage.animationUrl}
-                          autoPlay
-                          loop
-                          muted={activeSoundtrack === "none"}
-                          className="w-full h-full object-cover"
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        <motion.img
-                          src={activeImage.url}
-                          alt={activeImage.prompt}
-                          className="max-h-[420px] max-w-full object-contain select-none"
-                          referrerPolicy="no-referrer"
-                          animate={isPlayingAnimation ? (
-                            animationStyle === "cinematic-zoom" ? {
-                              scale: [1, 1.15, 1.05, 1.12, 1],
-                              x: [0, 4, -4, 2, 0],
-                              y: [0, -3, 3, -1, 0],
-                            } : animationStyle === "retro-pan" ? {
-                              scale: 1.15,
-                              x: [-12, 12, -12],
-                              y: [0, 0, 0],
-                            } : animationStyle === "orbital-drift" ? {
-                              scale: 1.1,
-                              rotate: [0, 1.5, -1.5, 0.8, 0],
-                              x: [0, 3, -3, 1, 0],
-                              y: [0, -3, 3, -1, 0],
-                            } : animationStyle === "cosmic-nebula" ? {
-                              scale: [1.02, 1.08, 1.02],
-                              filter: [
-                                "hue-rotate(0deg) saturate(100%) brightness(100%)",
-                                "hue-rotate(12deg) saturate(135%) brightness(110%)",
-                                "hue-rotate(0deg) saturate(100%) brightness(100%)"
-                              ]
-                            } : { // liquid-shimmer
-                              scale: [1.05, 1.1, 1.05],
-                              skewX: [0, 1, -1, 0],
-                              skewY: [0, -0.5, 0.5, 0]
-                            }
-                          ) : { scale: 1, x: 0, y: 0, rotate: 0, filter: "none", skewX: 0, skewY: 0 }}
-                          transition={isPlayingAnimation ? {
-                            duration: (animationStyle === "cosmic-nebula" ? 8 : animationStyle === "retro-pan" ? 12 : 16) / animationSpeed,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          } : {}}
-                        />
-                      )}
-
-                      {/* Floating Particle overlay */}
-                      {isPlayingAnimation && showParticles && (
-                        <ParticleCanvas style={animationStyle} speed={animationSpeed} />
-                      )}
-
-                      {/* Generative Motion loader overlay */}
-                      {isGeneratingVideo && (
-                        <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 space-y-4 z-30">
-                          <div className="relative flex items-center justify-center">
-                            <div className="w-12 h-12 rounded-full border-2 border-indigo-950 border-t-indigo-500 animate-spin" />
-                            <Video className="w-5 h-5 text-indigo-400 absolute animate-pulse" />
-                          </div>
-                          <div className="text-center space-y-1 max-w-xs">
-                            <p className="text-xs font-bold text-slate-200">Adding animation magic...</p>
-                            <p className="text-[10px] text-slate-500 leading-normal">
-                              Blending smooth cinematic motion into your masterpiece image.
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Custom Ambient Track Badge Overlay */}
-                      {isPlayingAnimation && activeSoundtrack !== "none" && (
-                        <div className="absolute bottom-3 left-3 bg-indigo-950/90 border border-indigo-500/30 text-indigo-300 rounded-full px-2.5 py-1 text-[9px] font-bold font-mono tracking-wider flex items-center gap-1.5 z-20 shadow-md">
-                          <Music className="w-3 h-3 text-pink-400 animate-bounce" />
-                          <span>SOUND: {activeSoundtrack.toUpperCase()}</span>
-                          <span className="flex gap-0.5 items-end h-2 w-3">
-                            <span className="w-0.5 bg-indigo-400 animate-[pulse_0.6s_infinite_alternate]" style={{height: '100%'}} />
-                            <span className="w-0.5 bg-indigo-400 animate-[pulse_0.4s_infinite_alternate]" style={{height: '50%'}} />
-                            <span className="w-0.5 bg-indigo-400 animate-[pulse_0.5s_infinite_alternate]" style={{height: '80%'}} />
-                          </span>
-                        </div>
-                      )}
+                      <motion.img
+                        src={activeImage.url}
+                        alt={activeImage.prompt}
+                        className="max-h-[420px] max-w-full object-contain select-none"
+                        referrerPolicy="no-referrer"
+                      />
                     </div>
                   </div>
                 )}
@@ -1249,139 +995,6 @@ export default function App() {
                         {activeImage.aspectRatio} (Dimensions)
                       </p>
                     </div>
-                  </div>
-
-                  {/* Dynamic Studio Motion Creator Section */}
-                  <div className="border-t border-slate-800/60 pt-3.5 space-y-3">
-                    {videoApiMessage && (
-                      <div className="bg-indigo-950/40 border border-indigo-900/50 rounded-xl p-3 text-[10px] text-indigo-300 leading-relaxed flex gap-2">
-                        <Info className="w-4 h-4 text-indigo-400 shrink-0" />
-                        <div>
-                          <span className="font-bold text-slate-200 block mb-0.5">Animation Status</span>
-                          {videoApiMessage.replace(/Veo 3\.1/gi, "Animation Maker")}
-                        </div>
-                      </div>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => setShowAnimationPanel(!showAnimationPanel)}
-                      className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer shadow-md ${
-                        showAnimationPanel
-                          ? "bg-indigo-950/60 border-indigo-500 text-indigo-300"
-                          : "bg-slate-950 hover:bg-slate-900 border-slate-850 text-indigo-400 hover:text-indigo-300"
-                      }`}
-                    >
-                      <Video className="w-4 h-4 text-indigo-400 animate-pulse" />
-                      <span>{showAnimationPanel ? "Hide Animation Settings" : "Add Animation Magic 🌟"}</span>
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showAnimationPanel ? "rotate-180" : ""}`} />
-                    </button>
-
-                    <AnimatePresence>
-                      {showAnimationPanel && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="bg-slate-950/80 rounded-xl p-4 border border-slate-800/70 space-y-4 overflow-hidden text-xs"
-                        >
-                          <div className="space-y-4">
-                            {/* Motion Preset Grid */}
-                            <div className="space-y-1.5">
-                              <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
-                                1. Choose How It Moves 🌟
-                              </span>
-                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                {[
-                                  { id: "cinematic-zoom", name: "Cinematic Zoom", desc: "Slow Ken Burns move" },
-                                  { id: "retro-pan", name: "Vaporwave Pan", desc: "Horizontal scanlines shift" },
-                                  { id: "orbital-drift", name: "Orbital Parallax", desc: "3D drift tilt" },
-                                  { id: "liquid-shimmer", name: "Liquid Ripple", desc: "Swaying waves feel" },
-                                  { id: "cosmic-nebula", name: "Nebula Shimmer", desc: "Pulsing chroma shifts" },
-                                ].map((styleOpt) => (
-                                  <button
-                                    type="button"
-                                    key={styleOpt.id}
-                                    onClick={() => setAnimationStyle(styleOpt.id as any)}
-                                    className={`p-2 rounded-lg border text-left transition ${
-                                      animationStyle === styleOpt.id
-                                        ? "bg-indigo-950 border-indigo-500/80 text-white font-bold"
-                                        : "bg-slate-900/40 border-slate-850 hover:border-slate-800 text-slate-400"
-                                    }`}
-                                  >
-                                    <div className="font-semibold text-[10px]">{styleOpt.name}</div>
-                                    <div className="text-[8px] text-slate-500 line-clamp-1 mt-0.5">{styleOpt.desc}</div>
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* Soundtrack Synth Selection */}
-                            <div className="space-y-1.5">
-                              <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                                <Music className="w-3.5 h-3.5 text-pink-400 animate-pulse" />
-                                2. Choose Ambient Soundtrack 🎵
-                              </span>
-                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                {[
-                                  { id: "none", name: "No Sound", desc: "Silent" },
-                                  { id: "synthwave", name: "Synthwave '85", desc: "Analog bass loop" },
-                                  { id: "lofi", name: "Lofi Chords", desc: "Warm Rhodes swells" },
-                                  { id: "cosmic", name: "Cosmic Pad", desc: "Deep ambient swell" },
-                                ].map((audioOpt) => (
-                                  <button
-                                    type="button"
-                                    key={audioOpt.id}
-                                    onClick={() => setActiveSoundtrack(audioOpt.id as any)}
-                                    className={`p-2 rounded-lg border text-left transition ${
-                                      activeSoundtrack === audioOpt.id
-                                        ? "bg-pink-950/25 border-pink-500/80 text-pink-300 font-bold"
-                                        : "bg-slate-900/40 border-slate-850 hover:border-slate-800 text-slate-400"
-                                    }`}
-                                  >
-                                    <div className="text-[10px]">{audioOpt.name}</div>
-                                    <div className="text-[8px] text-slate-500 mt-0.5 leading-none">{audioOpt.desc}</div>
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* Main CTA trigger */}
-                            <div className="flex gap-2.5 pt-2 border-t border-slate-800/50">
-                              {isPlayingAnimation ? (
-                                <button
-                                  type="button"
-                                  onClick={() => setIsPlayingAnimation(false)}
-                                  className="flex-1 py-2.5 px-3 rounded-xl font-bold bg-pink-600 hover:bg-pink-500 text-white transition flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
-                                >
-                                  <Pause className="w-3.5 h-3.5" />
-                                  Pause Preview ⏸️
-                                </button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={() => setIsPlayingAnimation(true)}
-                                  className="flex-1 py-2.5 px-3 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
-                                >
-                                  <Play className="w-3.5 h-3.5" />
-                                  Preview Motion ✨
-                                </button>
-                              )}
-
-                              <button
-                                type="button"
-                                onClick={handleAnimateImage}
-                                disabled={isGeneratingVideo}
-                                className="flex-1 py-2.5 px-4 rounded-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white transition flex items-center justify-center gap-2 shadow-lg cursor-pointer disabled:opacity-50"
-                              >
-                                <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-                                <span>Create Animated Video 🎬</span>
-                              </button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
                   </div>
 
                   {/* Alex's satisfying Save/Download Row */}
