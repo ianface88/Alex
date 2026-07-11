@@ -20,6 +20,51 @@ export const STYLE_PRESETS: StylePreset[] = [
     examplePrompt: "An elderly weathered fisherman looking directly into the camera on a foggy pier"
   },
   {
+    id: "vintage-polaroid",
+    name: "Vintage Polaroid",
+    description: "Warm, nostalgic instant-photo aesthetics with faded colors, soft focus, and authentic chemical burn borders.",
+    category: "Realistic",
+    promptEnhancement: ", vintage polaroid photo, 1970s instant photography, warm faded colors, slightly soft focus, light leak on margin, authentic analog film look",
+    icon: "Camera",
+    examplePrompt: "A cozy sun-drenched breakfast table with a mug of coffee and a fresh croissant"
+  },
+  {
+    id: "macro-nature",
+    name: "Extreme Macro Nature",
+    description: "Incredible microscopic detail of plants, insects, or water drops, showing intricate veins and dew textures.",
+    category: "Realistic",
+    promptEnhancement: ", extreme macro lens photography, hyper-detailed close-up, sharp micro-textures, glistening dew drops, shallow depth of field, professional nature photography, National Geographic quality",
+    icon: "Camera",
+    examplePrompt: "A tiny ladybug perched on a blade of grass covered in morning dew"
+  },
+  {
+    id: "drone-aerial",
+    name: "Scenic Drone Aerial",
+    description: "Sweeping high-altitude dramatic drone photography looking down on landscapes with beautiful horizons.",
+    category: "Realistic",
+    promptEnhancement: ", majestic drone aerial photo, high-angle bird's-eye view, sweeping panoramic landscape, ultra-detailed terrain, epic lighting, atmospheric depth, cinematic composition",
+    icon: "Camera",
+    examplePrompt: "Winding coastal highway hugging green cliffs above a dark turquoise ocean"
+  },
+  {
+    id: "animal-portrait",
+    name: "Wildlife Close-Up",
+    description: "Stunning professional animal photography capturing soulful eyes, sharp fur/feather details, and clean natural backdrops.",
+    category: "Realistic",
+    promptEnhancement: ", stunning professional wildlife portrait, sharp focus on eyes, crisp fur details, soft blurred natural forest background, warm volumetric sunlight, National Geographic style",
+    icon: "Camera",
+    examplePrompt: "A regal red fox pausing in a snowy clearing, looking curious"
+  },
+  {
+    id: "fashion-editorial",
+    name: "High-Fashion Editorial",
+    description: "Sleek studio portraiture styled with high contrast, dramatic shadows, soft skin textures, and artistic lighting.",
+    category: "Realistic",
+    promptEnhancement: ", high-fashion editorial portrait, studio lighting, dramatic shadow play, Vogue aesthetic, sharp styling, professional makeup and textures, high contrast, elegant color grading",
+    icon: "Camera",
+    examplePrompt: "A model wearing a structured silver metallic jacket with striking holographic eyeliner"
+  },
+  {
     id: "acrylic-palette",
     name: "Acrylic Palette Knife",
     description: "Rich, textured dimensional impasto acrylic blobs, heavy tool scrapes, and layered glossy paints.",
@@ -27,6 +72,33 @@ export const STYLE_PRESETS: StylePreset[] = [
     promptEnhancement: ", heavy impasto acrylic palette knife painting, thick textured paint layers, colorful visible palette knife strokes, high-relief paint texture, vibrant fine art masterpiece, expressive canvas",
     icon: "Paintbrush",
     examplePrompt: "A field of vibrant red poppies under a turbulent blue sky"
+  },
+  {
+    id: "glass-morphism",
+    name: "Glassmorphism 3D Art",
+    description: "Beautiful frosted glass plates refracting pastel gradient lights, modern 3D abstract shapes, and soft shadows.",
+    category: "Artistic",
+    promptEnhancement: ", modern glassmorphism 3D illustration, frosted glass translucent layers, glowing pastel gradients, refracting colorful light, abstract geometric spheres, clean digital art, soft ambient shadows",
+    icon: "Sparkles",
+    examplePrompt: "A floating heart made of frosted translucent glass surrounding miniature glowing stars"
+  },
+  {
+    id: "stained-paper-collage",
+    name: "Torn Paper Collage Art",
+    description: "Expressive mixed-media assemblage of torn newspaper, vintage patterns, watercolor washes, and layered textures.",
+    category: "Artistic",
+    promptEnhancement: ", torn paper collage art, mixed media masterpiece, layered handmade papers, vintage print clippings, watercolor stains, rough textured edges, abstract fine art assemblage",
+    icon: "Palette",
+    examplePrompt: "A majestic hummingbird sipping nectar from a flower, made of layered torn paper"
+  },
+  {
+    id: "ancient-mosaic",
+    name: "Ancient Glass Mosaic",
+    description: "Intricate, slightly weathered hand-laid glass tile designs with sparkling gold grouts and earthy textures.",
+    category: "Artistic",
+    promptEnhancement: ", ancient Roman glass mosaic tile mural, intricate hand-laid colorful stone and glass pieces, glittering gold accents, weathered historic grout, ancient classic masterwork",
+    icon: "Palette",
+    examplePrompt: "An elegant peacock with sprawling feathers shimmering with gold"
   },
   {
     id: "risograph-print",
@@ -38,6 +110,51 @@ export const STYLE_PRESETS: StylePreset[] = [
     examplePrompt: "An elegant cat sitting on a windowsill overlooking a crescent moon"
   },
   {
+    id: "pastel-retro-ad",
+    name: "1950s Pastel Ad",
+    description: "Hand-painted classic commercial art, cheerful characters, bright retro pastels, and subtle aged magazine grain.",
+    category: "Retro",
+    promptEnhancement: ", retro 1950s hand-painted commercial illustration, vintage mid-century advertisement style, soft pastel gouache brushstrokes, smiling cozy characters, retro Americana aesthetics",
+    icon: "Image",
+    examplePrompt: "A smiling retro family having a picnic in front of an old station wagon"
+  },
+  {
+    id: "cyber-sunset",
+    name: "80s Cyber-Sunset",
+    description: "Grid lines sliding into a massive neon sun, wireframe mountains, glowing neon pink and purple gradients.",
+    category: "Retro",
+    promptEnhancement: ", 1980s outrun synthwave aesthetic, giant glowing low-poly wireframe grid floor, massive glowing neon sun on horizon, wireframe magenta mountains, hot pink and neon purple gradients",
+    icon: "Image",
+    examplePrompt: "A futuristic sports car driving towards a giant neon wireframe sunset"
+  },
+  {
+    id: "victorian-photo",
+    name: "Victorian Gothic Portrait",
+    description: "Authentic 1800s cabinet card style with high-contrast sepia tones, light leaks, and antique plate-scratched textures.",
+    category: "Retro",
+    promptEnhancement: ", 19th century Victorian cabinet card photograph, antique sepia tint, vintage daguerreotype, chemical stains, scratched plate texture, high contrast eerie gothic mood",
+    icon: "Image",
+    examplePrompt: "A mysterious gothic mansion nestled in overgrown dark oak trees"
+  },
+  {
+    id: "retro-postcard",
+    name: "1960s Travel Postcard",
+    description: "Saturated technicolor dyes, stylized retro borders, and warm nostalgic linen paper textures.",
+    category: "Retro",
+    promptEnhancement: ", 1960s vintage travel postcard style, highly saturated technicolor print, offset printing textures, retro linen paper grain, distressed retro typography frame border",
+    icon: "Image",
+    examplePrompt: "The golden sandy beach of Hawaii under puffy clouds with palm trees framing the view"
+  },
+  {
+    id: "golden-age-comic",
+    name: "Golden Age Comic Book",
+    description: "Hand-drawn bold black outlines, ink dot gradients, dramatic action frames, and weathered cheap paper textures.",
+    category: "Retro",
+    promptEnhancement: ", 1940s golden age comic book art style, bold hand-inked line work, retro halftone dot patterns, hand-drawn action panels, slightly yellowed cheap vintage paper texture",
+    icon: "Gamepad2",
+    examplePrompt: "A retro superhero looking heroic standing atop a city skyscraper at night"
+  },
+  {
     id: "japanese-woodblock",
     name: "Japanese Woodblock (Ukiyo-e)",
     description: "Classic hand-carved block prints with graceful ink lines, gradient sky washes, and organic aged washi paper textures.",
@@ -45,6 +162,105 @@ export const STYLE_PRESETS: StylePreset[] = [
     promptEnhancement: ", ukiyo-e style, classic Japanese woodblock print, elegant black ink outlines, flat color fields, organic aged washi paper texture, traditional woodblock printing style, masterwork illustration",
     icon: "Brush",
     examplePrompt: "A majestic crane bird standing in front of a giant red sun"
+  },
+  {
+    id: "storybook-whimsical",
+    name: "Whimsical Storybook",
+    description: "Soft, cute hand-drawn watercolor illustration, pencil outlines, heartwarming animals, and fairytale forests.",
+    category: "Illustration",
+    promptEnhancement: ", cute children's storybook illustration, whimsical watercolor and colored pencil shading, soft warm tones, heartwarming fairytale aesthetics, adorable animal characters",
+    icon: "Smile",
+    examplePrompt: "A tiny hedgehog wearing a little knit hat sitting under a mushroom holding a cup of tea"
+  },
+  {
+    id: "modern-flat-vector",
+    name: "Modern Flat Vector Art",
+    description: "Sleek geometric shapes, clean minimal curves, bold colors, high contrast, and stylish modern branding aesthetics.",
+    category: "Illustration",
+    promptEnhancement: ", modern flat vector illustration, sleek geometric minimalism, clean vector lines, bold flat color blocks, high contrast, trendy corporate art style, minimalist composition",
+    icon: "PenTool",
+    examplePrompt: "A traveler walking up a winding mountain trail toward a gigantic warm sun"
+  },
+  {
+    id: "3d-paper-cutout",
+    name: "3D Paper Cutout Craft",
+    description: "Layered shadows, textured craft paper, 3D depth, creating cute and detailed miniature scenery.",
+    category: "Illustration",
+    promptEnhancement: ", 3d paper cutout shadow box art, layered textured paper sheets, realistic paper shadows, rich 3D depth, adorable miniature scenery craft, intricate paper-cut composition",
+    icon: "Brush",
+    examplePrompt: "An undersea paradise filled with colorful corals, fishes, and a friendly sea turtle"
+  },
+  {
+    id: "ink-watercolor-wash",
+    name: "Ink & Watercolor Wash",
+    description: "Expressive black ink splatters, wet bleed colors, and loose sketching on heavy cotton paper.",
+    category: "Illustration",
+    promptEnhancement: ", expressive ink and watercolor wash painting, loose sketch lines, elegant ink splatters, wet-on-wet paint bleeds, artistic paper textures, elegant sketch masterpiece",
+    icon: "Brush",
+    examplePrompt: "A cozy Parisian street café with bicycle parked outside under cherry blossom petals"
+  },
+  {
+    id: "pen-crosshatch",
+    name: "Detailed Pen & Crosshatch",
+    description: "Intricate black-and-white ink drawings with dense line-shading, vintage engraving feel, and fine sketch details.",
+    category: "Illustration",
+    promptEnhancement: ", intricate fine liner pen drawing, detailed crosshatching shadows, vintage engraving print style, black ink on textured cream-colored paper, high detail hand-drawn sketch",
+    icon: "PenTool",
+    examplePrompt: "An ancient giant oak tree with gnarly roots and secrets hidden in its hollow trunk"
+  },
+  {
+    id: "cyberpunk",
+    name: "Cyberpunk Neon",
+    description: "Futuristic neon-drenched cityscape with wet streets, holographic advertising, and heavy synthwave coloring.",
+    category: "Cinematic",
+    promptEnhancement: ", cyberpunk visual style, neon glowing pink, teal, and violet lights, rain-soaked asphalt with bright reflections, futuristic metropolis, high contrast, cinematic mood, 80s retro-future aesthetic",
+    icon: "Zap",
+    examplePrompt: "A sleek high-speed motorcycle parked outside a noodle shop in a futuristic city alley"
+  },
+  {
+    id: "film-noir",
+    name: "1940s Classic Film Noir",
+    description: "Dramatic high-contrast black-and-white photography, Venetian blind shadows, rainy dark city streets, and moody smoke.",
+    category: "Cinematic",
+    promptEnhancement: ", 1940s film noir photography style, dramatic high-contrast black and white, deep chiaroscuro shadows, venetian blind light patterns, rain-soaked dark city streets, atmospheric mist",
+    icon: "ShieldAlert",
+    examplePrompt: "A solitary detective in a trench coat standing under a lone glowing street lamp in the fog"
+  },
+  {
+    id: "space-odyssey",
+    name: "Interstellar Sci-Fi Odyssey",
+    description: "Epic cosmic exploration, massive planets, glowing engine trails, sleek starships, and deep stellar nebulae.",
+    category: "Cinematic",
+    promptEnhancement: ", epic sci-fi space opera cinematic shot, massive detailed ringed planet, sleek starship gliding past, glowing hyperdrive trails, beautiful nebula gases, interstellar atmosphere, detailed spacecraft hull",
+    icon: "Orbit",
+    examplePrompt: "An astronaut exploring a crystal cave on a purple desert moon with gas giant in background"
+  },
+  {
+    id: "magical-aurora",
+    name: "Breathtaking Northern Lights",
+    description: "Swirling luminous green and violet aurora ribbons over quiet snow-capped mountains and reflective lakes.",
+    category: "Cinematic",
+    promptEnhancement: ", breathtaking landscape photography of northern lights, brilliant swirling emerald and violet aurora borealis in night sky, majestic snow-capped mountains, reflective glassy lake surface, high dynamic range",
+    icon: "Sun",
+    examplePrompt: "A cozy wooden cabin glowing from inside, nestled in snow under a spectacular dancing green aurora"
+  },
+  {
+    id: "golden-hour-sun",
+    name: "Sun-Drenched Golden Hour",
+    description: "Glistening warm lens flares, volumetric sunbeams, rich orange and amber color tones, and dreamy backlit silhouettes.",
+    category: "Cinematic",
+    promptEnhancement: ", spectacular cinematic shot at golden hour, sun-drenched backlight, glowing warm lens flares, rich amber and orange color grading, volumetric sunbeams, beautiful dust motes floating, soft magical dream",
+    icon: "Sun",
+    examplePrompt: "A group of friends laughing on a hilltop during a beautiful summer sunset"
+  },
+  {
+    id: "misty-forest",
+    name: "Moody Nordic Misty Forest",
+    description: "Atmospheric towering pine trees, heavy mountain mists, cool slate-green color tones, and mysterious pathways.",
+    category: "Cinematic",
+    promptEnhancement: ", moody cinematic landscape photography, towering foggy pine forest, thick low-hanging mist, cool slate-green and dark charcoal color tones, mysterious dirt path, atmospheric and quiet",
+    icon: "ShieldAlert",
+    examplePrompt: "A winding forest trail disappearing into a thick wall of white mountain mist"
   },
   {
     id: "stained-glass",
@@ -90,15 +306,6 @@ export const STYLE_PRESETS: StylePreset[] = [
     promptEnhancement: ", futuristic iridescent bismuth crystal landscape, stair-stepped metallic crystal geometries, beautiful rainbow light refraction, metallic sheen, dark obsidian ground, alien mineral formations",
     icon: "Sparkles",
     examplePrompt: "A futuristic crystalline temple complex carved into a canyon"
-  },
-  {
-    id: "cyberpunk",
-    name: "Cyberpunk Neon",
-    description: "Futuristic neon-drenched cityscape with wet streets, holographic advertising, and heavy synthwave coloring.",
-    category: "Cinematic",
-    promptEnhancement: ", cyberpunk visual style, neon glowing pink, teal, and violet lights, rain-soaked asphalt with bright reflections, futuristic metropolis, high contrast, cinematic mood, 80s retro-future aesthetic",
-    icon: "Zap",
-    examplePrompt: "A sleek high-speed motorcycle parked outside a noodle shop in a futuristic city alley"
   },
   {
     id: "ghibli",
@@ -232,7 +439,21 @@ export const QUALITY_OPTIONS: QualityOption[] = [
     id: "standard",
     label: "Standard Quality",
     model: "gemini-3.1-flash-lite-image",
-    description: "Lightning fast generation, great for quick ideas and drafts.",
-    badge: "Fast & Free"
+    description: "Lightning fast generation, perfect for quick ideas and drafts.",
+    badge: "Lite"
+  },
+  {
+    id: "high",
+    label: "High Detail (1K)",
+    model: "gemini-3.1-flash-image",
+    description: "Crisp 1024px rendering with enhanced depth, lighting, and textures.",
+    badge: "Pro 1K"
+  },
+  {
+    id: "ultra",
+    label: "Ultra Detail (2K)",
+    model: "gemini-3.1-flash-image",
+    description: "Supreme 2048px high-definition canvas with micro-detail fidelity.",
+    badge: "Pro 2K"
   }
 ];

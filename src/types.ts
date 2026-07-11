@@ -35,4 +35,7 @@ export interface GeneratedImage {
   quality: string;
   model: string;
   timestamp: string;
+  animationStyle?: string;
+  animationUrl?: string;
+  isAnimated?: boolean;
 }
