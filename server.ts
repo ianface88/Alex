@@ -9,7 +9,7 @@ dotenv.config();
 
 // Create Express app
 const app = express();
-const PORT = 3000;
+const PORT = parseInt(process.env.PORT || "3000", 10);
 
 // Enable JSON body parsing with a limit of 10MB to accommodate images if needed
 app.use(express.json({ limit: "10mb" }));
