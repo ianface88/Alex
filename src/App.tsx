@@ -48,6 +48,7 @@ import {
 } from "lucide-react";
 import { STYLE_PRESETS, ASPECT_RATIOS, QUALITY_OPTIONS } from "./presets";
 import { StylePreset, AspectRatioOption, QualityOption, GeneratedImage } from "./types";
+import type { Brand } from "./brand";
 
 // Dynamic loading phrases that rotate during generation to keep user engaged
 const LOADING_PHRASES = {
@@ -126,7 +127,7 @@ const PresetIcon = ({ name, className = "w-5 h-5" }: { name: string; className?:
   }
 };
 
-export default function App() {
+export default function App({ brand }: { brand: Brand }) {
   const [prompt, setPrompt] = useState("");
   const [selectedPresetId, setSelectedPresetId] = useState("none");
   const [selectedRatioId, setSelectedRatioId] = useState("1:1");
@@ -536,12 +537,12 @@ export default function App() {
   const currentPhrase = currentPhrases[loadingPhraseIndex] || currentPhrases[0];
 
   return (
-    <div id="app_root" className="min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200 antialiased font-sans">
+    <div id="app_root" className="min-h-screen bg-slate-950 text-slate-100 selection:bg-brand-500/30 selection:text-brand-200 antialiased font-sans">
       
       {/* Background ambience */}
-      <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-indigo-950/20 via-slate-950/0 to-slate-950/0 pointer-events-none" />
-      <div className="absolute top-[20%] right-[10%] w-96 h-96 bg-purple-900/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-[40%] left-[5%] w-80 h-80 bg-indigo-900/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-brand-950/20 via-slate-950/0 to-slate-950/0 pointer-events-none" />
+      <div className="absolute top-[20%] right-[10%] w-96 h-96 bg-brand-secondary-900/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[40%] left-[5%] w-80 h-80 bg-brand-900/10 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Header Banner / Navbar */}
       <header id="app_header" className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/60 px-4 py-3 sm:px-6">
@@ -549,15 +550,15 @@ export default function App() {
           
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-secondary-600 to-brand-accent-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
               <Brush className="w-5 h-5 text-white animate-pulse" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-100 via-indigo-100 to-indigo-200 flex items-center gap-2">
-                Alex's Imagination Station
+              <h1 className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-100 via-brand-100 to-brand-200 flex items-center gap-2">
+                {brand.studioName}
               </h1>
-              <p className="text-xs text-indigo-300 font-medium tracking-wide flex items-center gap-1">
-                <Heart className="w-3 h-3 text-pink-500 fill-pink-500" /> HER CREATIVE CANVAS
+              <p className="text-xs text-brand-300 font-medium tracking-wide flex items-center gap-1">
+                <Heart className="w-3 h-3 text-brand-accent-500 fill-brand-accent-500" /> {brand.canvasLabel}
               </p>
             </div>
           </div>
@@ -581,14 +582,14 @@ export default function App() {
               <div className="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-5 sm:p-6 backdrop-blur-sm space-y-4">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-semibold text-slate-200 flex items-center gap-2">
-                    <span className="w-1.5 h-4 bg-indigo-500 rounded-full" />
+                    <span className="w-1.5 h-4 bg-brand-500 rounded-full" />
                     1. Define Core Prompt
                   </label>
                   <button
                     type="button"
                     onClick={handleSurpriseMe}
                     disabled={isGenerating}
-                    className="text-xs bg-indigo-950 hover:bg-indigo-900 border border-indigo-800/50 hover:border-indigo-700 text-indigo-300 px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    className="text-xs bg-brand-950 hover:bg-brand-900 border border-brand-800/50 hover:border-brand-700 text-brand-300 px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                   >
                     <Flame className="w-3.5 h-3.5 text-amber-400" />
                     Surprise Me!
@@ -603,7 +604,7 @@ export default function App() {
                       if (errorMessage) setErrorMessage(null);
                     }}
                     placeholder="Describe what you want to see... (e.g., An astronaut riding a majestic horse on the rings of Saturn)"
-                    className="w-full min-h-[100px] bg-slate-950/90 border border-slate-800 focus:border-indigo-500/80 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm transition resize-y"
+                    className="w-full min-h-[100px] bg-slate-950/90 border border-slate-800 focus:border-brand-500/80 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 text-sm transition resize-y"
                     maxLength={800}
                     disabled={isGenerating}
                   />
@@ -617,7 +618,7 @@ export default function App() {
               <div className="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-5 sm:p-6 backdrop-blur-sm space-y-5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <label className="text-sm font-semibold text-slate-200 flex items-center gap-2">
-                    <span className="w-1.5 h-4 bg-indigo-500 rounded-full" />
+                    <span className="w-1.5 h-4 bg-brand-500 rounded-full" />
                     2. Select Style Preset
                   </label>
 
@@ -629,7 +630,7 @@ export default function App() {
                       value={presetSearch}
                       onChange={(e) => setPresetSearch(e.target.value)}
                       placeholder="Search style..."
-                      className="w-full bg-slate-950/80 border border-slate-800 focus:border-indigo-500/80 rounded-lg pl-8 pr-3 py-1 text-xs placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/30 text-slate-200"
+                      className="w-full bg-slate-950/80 border border-slate-800 focus:border-brand-500/80 rounded-lg pl-8 pr-3 py-1 text-xs placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-500/30 text-slate-200"
                     />
                   </div>
                 </div>
@@ -643,7 +644,7 @@ export default function App() {
                       onClick={() => setPresetFilter(cat)}
                       className={`text-[11px] font-medium px-2.5 py-1 rounded-md transition ${
                         presetFilter === cat
-                          ? "bg-indigo-600 text-white"
+                          ? "bg-brand-600 text-white"
                           : "bg-slate-950 text-slate-400 hover:text-slate-200 hover:bg-slate-900"
                       }`}
                     >
@@ -663,17 +664,17 @@ export default function App() {
                         onClick={() => setSelectedPresetId(preset.id)}
                         className={`text-left p-3 rounded-xl border transition flex flex-col justify-between gap-1 h-[96px] group relative overflow-hidden ${
                           isSelected
-                            ? "bg-indigo-950/40 border-indigo-500/80 shadow-md shadow-indigo-500/5 text-slate-100"
+                            ? "bg-brand-950/40 border-brand-500/80 shadow-md shadow-brand-500/5 text-slate-100"
                             : "bg-slate-950/40 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/30 text-slate-300"
                         }`}
                       >
                         {/* Selected accent glow */}
                         {isSelected && (
-                          <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-xl pointer-events-none" />
+                          <div className="absolute top-0 right-0 w-24 h-24 bg-brand-500/10 rounded-full blur-xl pointer-events-none" />
                         )}
 
                         <div className="flex items-start gap-2.5">
-                          <div className={`p-1.5 rounded-lg shrink-0 ${isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400 group-hover:text-slate-200'}`}>
+                          <div className={`p-1.5 rounded-lg shrink-0 ${isSelected ? 'bg-brand-600 text-white' : 'bg-slate-900 text-slate-400 group-hover:text-slate-200'}`}>
                             <PresetIcon name={preset.icon} className="w-4 h-4" />
                           </div>
                           <div>
@@ -689,7 +690,7 @@ export default function App() {
                           </div>
                         </div>
 
-                        <div className="text-[9px] font-mono text-indigo-400/70 font-semibold self-end bg-indigo-950/20 px-1.5 py-0.5 rounded border border-indigo-900/10 uppercase tracking-widest">
+                        <div className="text-[9px] font-mono text-brand-400/70 font-semibold self-end bg-brand-950/20 px-1.5 py-0.5 rounded border border-brand-900/10 uppercase tracking-widest">
                           {preset.category}
                         </div>
                       </button>
@@ -701,7 +702,7 @@ export default function App() {
               {/* Box 3: Dimensions / Aspect Ratio */}
               <div className="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-5 sm:p-6 backdrop-blur-sm space-y-4">
                 <label className="text-sm font-semibold text-slate-200 flex items-center gap-2">
-                  <span className="w-1.5 h-4 bg-indigo-500 rounded-full" />
+                  <span className="w-1.5 h-4 bg-brand-500 rounded-full" />
                   3. Dimensions / Aspect Ratio
                 </label>
                 
@@ -715,13 +716,13 @@ export default function App() {
                         onClick={() => setSelectedRatioId(ratio.id)}
                         className={`flex flex-col sm:flex-row items-center gap-3 p-3 rounded-xl border text-xs font-medium transition cursor-pointer ${
                           isSelected
-                            ? "bg-indigo-950/40 border-indigo-500/85 text-white shadow-md shadow-indigo-600/5"
+                            ? "bg-brand-950/40 border-brand-500/85 text-white shadow-md shadow-brand-600/5"
                             : "bg-slate-950/40 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/30 text-slate-400 hover:text-slate-200"
                         }`}
                       >
                         {/* Mini ratio preview */}
                         <div className="w-10 h-10 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center shrink-0">
-                          <div className={`bg-indigo-500/50 border border-indigo-400 rounded ${ratio.widthClass} ${ratio.heightClass} shadow-inner`} />
+                          <div className={`bg-brand-500/50 border border-brand-400 rounded ${ratio.widthClass} ${ratio.heightClass} shadow-inner`} />
                         </div>
                         <div className="text-center sm:text-left">
                           <p className="font-bold text-[11px] text-slate-200">{ratio.ratio}</p>
@@ -751,7 +752,7 @@ export default function App() {
                             Ensure your Google AI Studio project is connected to a <strong>Paid/Billable plan</strong>. Free-tier keys have a limit of 0 for image generation.
                           </li>
                           <li>
-                            Copy your billable API key from the <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline inline-flex items-center gap-0.5 font-medium">Google AI Studio console <ExternalLink className="w-2.5 h-2.5" /></a>.
+                            Copy your billable API key from the <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" className="text-brand-400 hover:underline inline-flex items-center gap-0.5 font-medium">Google AI Studio console <ExternalLink className="w-2.5 h-2.5" /></a>.
                           </li>
                           <li>
                             Open the <strong>Settings &gt; Secrets</strong> menu (in the top-right toolbar of the AI Studio editor) and paste your key under the <code>GEMINI_API_KEY</code> field.
@@ -778,8 +779,8 @@ export default function App() {
                   !prompt.trim()
                     ? "bg-slate-800/80 text-slate-500 border border-slate-700/30 cursor-not-allowed"
                     : isGenerating
-                    ? "bg-indigo-950 text-indigo-400 border border-indigo-900/50 cursor-wait"
-                    : "bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-indigo-600/20 shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.01]"
+                    ? "bg-brand-950 text-brand-400 border border-brand-900/50 cursor-wait"
+                    : "bg-gradient-to-r from-brand-600 via-brand-500 to-brand-secondary-600 hover:from-brand-500 hover:to-brand-secondary-500 text-white shadow-brand-600/20 shadow-xl hover:shadow-brand-500/30 hover:scale-[1.01]"
                 }`}
               >
                 {isGenerating ? (
@@ -808,17 +809,17 @@ export default function App() {
               {/* Canvas header */}
               <div className="bg-slate-900/60 border-b border-slate-800/80 px-5 py-3.5 flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                  <span className={`w-2 h-2 rounded-full ${isGenerating ? "bg-amber-400 animate-ping" : activeImage ? "bg-indigo-500" : "bg-slate-600"}`} />
+                  <span className={`w-2 h-2 rounded-full ${isGenerating ? "bg-amber-400 animate-ping" : activeImage ? "bg-brand-500" : "bg-slate-600"}`} />
                   Art Canvas Studio
                 </span>
                 {activeImage && !isGenerating && (
                   <div className="flex items-center gap-2.5">
                     <button
                       onClick={() => isImageSaved(activeImage.id) ? removeFromCollection(activeImage.id) : saveToCollection(activeImage)}
-                      className="p-1.5 text-slate-400 hover:text-pink-400 rounded-lg hover:bg-slate-850/60 transition flex items-center gap-1 text-[11px]"
+                      className="p-1.5 text-slate-400 hover:text-brand-accent-400 rounded-lg hover:bg-slate-850/60 transition flex items-center gap-1 text-[11px]"
                       title={isImageSaved(activeImage.id) ? "Remove from Collection" : "Save to Collection"}
                     >
-                      <Heart className={`w-4 h-4 ${isImageSaved(activeImage.id) ? "fill-pink-500 text-pink-500" : ""}`} />
+                      <Heart className={`w-4 h-4 ${isImageSaved(activeImage.id) ? "fill-brand-accent-500 text-brand-accent-500" : ""}`} />
                       <span className="hidden sm:inline">{isImageSaved(activeImage.id) ? "Saved" : "Save"}</span>
                     </button>
                     <button
@@ -857,7 +858,7 @@ export default function App() {
                     </div>
                     <button
                       onClick={handleSurpriseMe}
-                      className="text-xs text-indigo-400 hover:text-indigo-300 font-medium inline-flex items-center gap-1 hover:underline"
+                      className="text-xs text-brand-400 hover:text-brand-300 font-medium inline-flex items-center gap-1 hover:underline"
                     >
                       Need inspiration? Surprise Me <ChevronRight className="w-3 h-3" />
                     </button>
@@ -870,14 +871,14 @@ export default function App() {
                     {/* Artistic loading spinner container */}
                     <div className="relative flex items-center justify-center">
                       {/* Floating glowing aura */}
-                      <div className="absolute w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl animate-pulse" />
+                      <div className="absolute w-24 h-24 bg-brand-500/10 rounded-full blur-2xl animate-pulse" />
                       
                       {/* Rotating ring */}
-                      <div className="w-16 h-16 rounded-full border-2 border-slate-800 border-t-indigo-500 animate-spin" />
+                      <div className="w-16 h-16 rounded-full border-2 border-slate-800 border-t-brand-500 animate-spin" />
                       
                       {/* Center floating icon */}
                       <div className="absolute flex items-center justify-center">
-                        <PresetIcon name={activePreset.icon} className="w-6 h-6 text-indigo-400 animate-bounce" />
+                        <PresetIcon name={activePreset.icon} className="w-6 h-6 text-brand-400 animate-bounce" />
                       </div>
                     </div>
 
@@ -930,8 +931,8 @@ export default function App() {
 
                       {/* Video indicator badge */}
                       {activeImage.isAnimated && (
-                        <div className="absolute top-3 left-3 bg-indigo-950/90 border border-indigo-500/30 text-indigo-300 rounded-full px-2.5 py-1 text-[9px] font-bold font-mono tracking-wider flex items-center gap-1 z-20 shadow-md">
-                          <Video className="w-3.5 h-3.5 text-pink-400 animate-pulse" />
+                        <div className="absolute top-3 left-3 bg-brand-950/90 border border-brand-500/30 text-brand-300 rounded-full px-2.5 py-1 text-[9px] font-bold font-mono tracking-wider flex items-center gap-1 z-20 shadow-md">
+                          <Video className="w-3.5 h-3.5 text-brand-accent-400 animate-pulse" />
                           <span>VEO 3.1 ANIMATED VIDEO</span>
                         </div>
                       )}
@@ -945,7 +946,7 @@ export default function App() {
               {activeImage && !isGenerating && (
                 <div className="bg-slate-900/40 border-t border-slate-800/80 p-5 space-y-4">
                   <div className="space-y-1.5">
-                    <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider font-mono">
+                    <span className="text-[10px] font-bold text-brand-400 uppercase tracking-wider font-mono">
                       Current Masterpiece Concept
                     </span>
                     <p className="text-xs font-semibold text-slate-200 leading-relaxed italic">
@@ -957,7 +958,7 @@ export default function App() {
                     <div>
                       <span className="text-slate-500">Preset Style:</span>
                       <p className="text-slate-300 font-semibold flex items-center gap-1.5 mt-0.5">
-                        <PresetIcon name={activePreset.icon} className="w-3.5 h-3.5 text-indigo-400" />
+                        <PresetIcon name={activePreset.icon} className="w-3.5 h-3.5 text-brand-400" />
                         {activeImage.styleName}
                       </p>
                     </div>
@@ -972,7 +973,7 @@ export default function App() {
                   {/* 🎨 NEW: Quick Interactive Image Editing 🎨 */}
                   <div className="border-t border-slate-800/60 pt-3.5 space-y-3">
                     <div className="flex items-center gap-2">
-                      <span className="p-1 rounded-md bg-indigo-600/10 text-indigo-400">
+                      <span className="p-1 rounded-md bg-brand-600/10 text-brand-400">
                         <Paintbrush className="w-3.5 h-3.5" />
                       </span>
                       <div>
@@ -988,7 +989,7 @@ export default function App() {
                         onChange={(e) => setEditInstruction(e.target.value)}
                         placeholder="What would you like to change?..."
                         disabled={isEditing || isGenerating}
-                        className="flex-1 bg-slate-950 border border-slate-850 focus:border-indigo-500/80 rounded-xl px-3 py-2 text-xs placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-indigo-500/30 text-slate-200"
+                        className="flex-1 bg-slate-950 border border-slate-850 focus:border-brand-500/80 rounded-xl px-3 py-2 text-xs placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-brand-500/30 text-slate-200"
                       />
                       <button
                         type="submit"
@@ -996,7 +997,7 @@ export default function App() {
                         className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
                           !editInstruction.trim() || isEditing || isGenerating
                             ? "bg-slate-800/80 text-slate-500 border border-slate-700/30 cursor-not-allowed"
-                            : "bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer shadow-md"
+                            : "bg-brand-600 hover:bg-brand-500 text-white cursor-pointer shadow-md"
                         }`}
                       >
                         {isEditing ? (
@@ -1026,16 +1027,16 @@ export default function App() {
                       animatingItemIds[activeImage.id] ? (
                         <button
                           disabled
-                          className="flex-1 py-3 px-4 rounded-xl text-xs font-bold bg-pink-950/20 border border-pink-500/30 text-pink-400 flex items-center justify-center gap-2"
+                          className="flex-1 py-3 px-4 rounded-xl text-xs font-bold bg-brand-accent-950/20 border border-brand-accent-500/30 text-brand-accent-400 flex items-center justify-center gap-2"
                         >
-                          <RefreshCw className="w-4 h-4 animate-spin text-pink-400" />
+                          <RefreshCw className="w-4 h-4 animate-spin text-brand-accent-400" />
                           Animating...
                         </button>
                       ) : (
                         <button
                           type="button"
                           onClick={(e) => handleTurnIntoVideo(activeImage, e)}
-                          className="flex-1 py-3 px-4 rounded-xl text-xs font-bold bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-400 hover:to-indigo-500 text-white transition flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-[0.98]"
+                          className="flex-1 py-3 px-4 rounded-xl text-xs font-bold bg-gradient-to-r from-brand-accent-500 to-brand-600 hover:from-brand-accent-400 hover:to-brand-500 text-white transition flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-[0.98]"
                         >
                           <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
                           Animate
@@ -1047,16 +1048,16 @@ export default function App() {
                       <button
                         type="button"
                         onClick={(e) => removeFromCollection(activeImage.id, e)}
-                        className="flex-1 py-3 px-4 rounded-xl text-xs font-bold bg-pink-950/50 border border-pink-900/60 hover:bg-pink-900/30 text-pink-300 transition flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-pink-950/20 active:scale-[0.98]"
+                        className="flex-1 py-3 px-4 rounded-xl text-xs font-bold bg-brand-accent-950/50 border border-brand-accent-900/60 hover:bg-brand-accent-900/30 text-brand-accent-300 transition flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-brand-accent-950/20 active:scale-[0.98]"
                       >
-                        <Heart className="w-4 h-4 fill-pink-500 text-pink-500 animate-pulse" />
+                        <Heart className="w-4 h-4 fill-brand-accent-500 text-brand-accent-500 animate-pulse" />
                         Saved in Studio Collection
                       </button>
                     ) : (
                       <button
                         type="button"
                         onClick={() => saveToCollection(activeImage)}
-                        className="flex-1 py-3 px-4 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-600/20 active:scale-[0.98]"
+                        className="flex-1 py-3 px-4 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-brand-600/20 active:scale-[0.98]"
                       >
                         <Heart className="w-4 h-4" />
                         Save to Studio Collection
@@ -1069,9 +1070,9 @@ export default function App() {
                         download={`alex_video_${activeImage.id}.mp4`}
                         target="_blank"
                         rel="noreferrer"
-                        className="py-3 px-5 rounded-xl text-xs font-bold bg-indigo-950 hover:bg-indigo-900 text-indigo-300 border border-indigo-850 transition flex items-center justify-center gap-1.5 active:scale-[0.98]"
+                        className="py-3 px-5 rounded-xl text-xs font-bold bg-brand-950 hover:bg-brand-900 text-brand-300 border border-brand-850 transition flex items-center justify-center gap-1.5 active:scale-[0.98]"
                       >
-                        <Video className="w-4 h-4 text-pink-400 animate-pulse" />
+                        <Video className="w-4 h-4 text-brand-accent-400 animate-pulse" />
                         Download MP4
                       </a>
                     )}
@@ -1081,7 +1082,7 @@ export default function App() {
                       download={`alex_art_${activeImage.id}.png`}
                       className="py-3 px-5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition flex items-center justify-center gap-1.5 active:scale-[0.98]"
                     >
-                      <Download className="w-4 h-4 text-indigo-400" />
+                      <Download className="w-4 h-4 text-brand-400" />
                       Save/Download PNG
                     </a>
                   </div>
@@ -1107,7 +1108,7 @@ export default function App() {
                   ? "bg-emerald-950/40 border-emerald-500/30 text-emerald-300"
                   : videoStatusMessage.type === "error"
                   ? "bg-red-950/40 border-red-500/30 text-red-300"
-                  : "bg-indigo-950/40 border-indigo-500/30 text-indigo-300"
+                  : "bg-brand-950/40 border-brand-500/30 text-brand-300"
               }`}
             >
               {videoStatusMessage.type === "success" ? (
@@ -1115,7 +1116,7 @@ export default function App() {
               ) : videoStatusMessage.type === "error" ? (
                 <ShieldAlert className="w-4 h-4 text-red-400 shrink-0" />
               ) : (
-                <Info className="w-4 h-4 text-indigo-400 shrink-0" />
+                <Info className="w-4 h-4 text-brand-400 shrink-0" />
               )}
               <div className="flex-1">
                 <span className="font-bold block mb-0.5">Veo Video Engine</span>
@@ -1139,12 +1140,12 @@ export default function App() {
                 onClick={() => setGalleryTab("saved")}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer min-h-[40px] ${
                   galleryTab === "saved"
-                    ? "bg-gradient-to-r from-pink-600 to-indigo-600 text-white shadow-md shadow-indigo-600/10"
+                    ? "bg-gradient-to-r from-brand-accent-600 to-brand-600 text-white shadow-md shadow-brand-600/10"
                     : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
                 }`}
               >
                 <FolderHeart className="w-4 h-4 shrink-0" />
-                <span>Alex's Saved Studio ({savedImages.length})</span>
+                <span>{brand.savedStudioLabel} ({savedImages.length})</span>
               </button>
 
               {/* Tab: General History */}
@@ -1152,7 +1153,7 @@ export default function App() {
                 onClick={() => setGalleryTab("history")}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer min-h-[40px] ${
                   galleryTab === "history"
-                    ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/10"
+                    ? "bg-gradient-to-r from-brand-600 to-brand-secondary-600 text-white shadow-md shadow-brand-600/10"
                     : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
                 }`}
               >
@@ -1180,7 +1181,7 @@ export default function App() {
                     localStorage.removeItem("alex_saved_masterpieces");
                   }
                 }}
-                className="text-xs text-pink-400 hover:text-pink-300 font-semibold transition flex items-center gap-1 cursor-pointer py-1 px-3 rounded-lg hover:bg-pink-950/20"
+                className="text-xs text-brand-accent-400 hover:text-brand-accent-300 font-semibold transition flex items-center gap-1 cursor-pointer py-1 px-3 rounded-lg hover:bg-brand-accent-950/20"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 Clear Studio Collection
@@ -1194,8 +1195,8 @@ export default function App() {
             /* TAB: SAVED COLLECTION */
             savedImages.length === 0 ? (
               <div className="text-center py-14 bg-slate-950/30 border border-dashed border-slate-800/60 rounded-xl space-y-3.5 max-w-md mx-auto p-4">
-                <div className="w-12 h-12 bg-pink-950/40 border border-pink-900/40 rounded-full flex items-center justify-center text-pink-400 mx-auto">
-                  <Heart className="w-6 h-6 fill-pink-500/15" />
+                <div className="w-12 h-12 bg-brand-accent-950/40 border border-brand-accent-900/40 rounded-full flex items-center justify-center text-brand-accent-400 mx-auto">
+                  <Heart className="w-6 h-6 fill-brand-accent-500/15" />
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-sm font-bold text-slate-300">No saved masterpieces yet</h4>
@@ -1215,7 +1216,7 @@ export default function App() {
                     }}
                     className={`group relative rounded-xl border overflow-hidden bg-slate-950/80 cursor-pointer transition flex flex-col justify-between ${
                       activeImage?.id === item.id
-                        ? "border-pink-500 shadow-md shadow-pink-500/5 ring-1 ring-pink-500/30"
+                        ? "border-brand-accent-500 shadow-md shadow-brand-accent-500/5 ring-1 ring-brand-accent-500/30"
                         : "border-slate-800 hover:border-slate-700 hover:scale-[1.01]"
                     }`}
                   >
@@ -1229,19 +1230,19 @@ export default function App() {
                       />
 
                       {/* Saved Heart Badge */}
-                      <div className="absolute top-2.5 right-2.5 bg-pink-600 text-white p-1 rounded-full shadow-md z-10 border border-pink-400/30">
+                      <div className="absolute top-2.5 right-2.5 bg-brand-accent-600 text-white p-1 rounded-full shadow-md z-10 border border-brand-accent-400/30">
                         <Heart className="w-3.5 h-3.5 fill-current text-white" />
                       </div>
 
                       {/* Video Indicator Badge */}
                       {item.isAnimated && (
-                        <div className="absolute top-2.5 left-2.5 bg-indigo-950/95 border border-indigo-500/35 text-indigo-300 p-1 rounded-md shadow-md z-10">
-                          <Video className="w-3.5 h-3.5 text-pink-400 animate-pulse" />
+                        <div className="absolute top-2.5 left-2.5 bg-brand-950/95 border border-brand-500/35 text-brand-300 p-1 rounded-md shadow-md z-10">
+                          <Video className="w-3.5 h-3.5 text-brand-accent-400 animate-pulse" />
                         </div>
                       )}
 
                       {/* Style label */}
-                      <div className="absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur-sm px-2 py-0.5 rounded text-[8px] font-mono text-pink-300 border border-slate-800/40">
+                      <div className="absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur-sm px-2 py-0.5 rounded text-[8px] font-mono text-brand-accent-300 border border-slate-800/40">
                         {item.styleName}
                       </div>
                     </div>
@@ -1257,7 +1258,7 @@ export default function App() {
                       <div className="space-y-2 pt-2 border-t border-slate-800/50">
                         {/* Animate / Play Action Button */}
                         {animatingItemIds[item.id] ? (
-                          <div className="w-full py-1.5 rounded-lg bg-pink-950/20 border border-pink-500/30 text-pink-400 font-bold text-[10px] flex items-center justify-center gap-1">
+                          <div className="w-full py-1.5 rounded-lg bg-brand-accent-950/20 border border-brand-accent-500/30 text-brand-accent-400 font-bold text-[10px] flex items-center justify-center gap-1">
                             <RefreshCw className="w-3 h-3 animate-spin" />
                             <span>Animating...</span>
                           </div>
@@ -1268,7 +1269,7 @@ export default function App() {
                               setActiveImage(item);
                               window.scrollTo({ top: 0, behavior: "smooth" });
                             }}
-                            className="w-full py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
+                            className="w-full py-1.5 rounded-lg bg-brand-accent-600 hover:bg-brand-accent-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
                           >
                             <Video className="w-3.5 h-3.5" />
                             <span>Play Video</span>
@@ -1276,7 +1277,7 @@ export default function App() {
                         ) : (
                           <button
                             onClick={(e) => handleTurnIntoVideo(item, e)}
-                            className="w-full py-1.5 rounded-lg bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-400 hover:to-indigo-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
+                            className="w-full py-1.5 rounded-lg bg-gradient-to-r from-brand-accent-500 to-brand-600 hover:from-brand-accent-400 hover:to-brand-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
                           >
                             <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
                             <span>Animate</span>
@@ -1298,7 +1299,7 @@ export default function App() {
 
                           <button
                             onClick={(e) => removeFromCollection(item.id, e)}
-                            className="flex-1 py-1 px-1.5 rounded bg-slate-900 border border-slate-800 text-pink-400 hover:text-pink-300 text-[9px] flex items-center justify-center gap-1 transition cursor-pointer"
+                            className="flex-1 py-1 px-1.5 rounded bg-slate-900 border border-slate-800 text-brand-accent-400 hover:text-brand-accent-300 text-[9px] flex items-center justify-center gap-1 transition cursor-pointer"
                           >
                             <Trash2 className="w-2.5 h-2.5" />
                             Unsave
@@ -1328,7 +1329,7 @@ export default function App() {
                     }}
                     className={`group relative rounded-xl border overflow-hidden bg-slate-950/80 cursor-pointer transition flex flex-col justify-between ${
                       activeImage?.id === item.id
-                        ? "border-indigo-500 shadow-md shadow-indigo-500/5 ring-1 ring-indigo-500/30"
+                        ? "border-brand-500 shadow-md shadow-brand-500/5 ring-1 ring-brand-500/30"
                         : "border-slate-800 hover:border-slate-700 hover:scale-[1.01]"
                     }`}
                   >
@@ -1343,13 +1344,13 @@ export default function App() {
 
                       {/* Style indicator marker */}
                       {isImageSaved(item.id) && (
-                        <div className="absolute top-2 right-2 bg-pink-600/90 text-white p-0.5 rounded-full shadow-sm z-10">
+                        <div className="absolute top-2 right-2 bg-brand-accent-600/90 text-white p-0.5 rounded-full shadow-sm z-10">
                           <Heart className="w-2.5 h-2.5 fill-current text-white" />
                         </div>
                       )}
 
                       {/* Style preset indicator label overlay on image */}
-                      <div className="absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur-sm px-2 py-0.5 rounded text-[8px] font-mono text-indigo-300 border border-slate-800/40">
+                      <div className="absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur-sm px-2 py-0.5 rounded text-[8px] font-mono text-brand-300 border border-slate-800/40">
                         {item.styleName}
                       </div>
                     </div>
@@ -1368,7 +1369,7 @@ export default function App() {
                       <div className="space-y-2 pt-2 border-t border-slate-800/50">
                         {/* Animate / Play Action Button */}
                         {animatingItemIds[item.id] ? (
-                          <div className="w-full py-1.5 rounded-lg bg-pink-950/20 border border-pink-500/30 text-pink-400 font-bold text-[10px] flex items-center justify-center gap-1">
+                          <div className="w-full py-1.5 rounded-lg bg-brand-accent-950/20 border border-brand-accent-500/30 text-brand-accent-400 font-bold text-[10px] flex items-center justify-center gap-1">
                             <RefreshCw className="w-3 h-3 animate-spin" />
                             <span>Animating...</span>
                           </div>
@@ -1379,7 +1380,7 @@ export default function App() {
                               setActiveImage(item);
                               window.scrollTo({ top: 0, behavior: "smooth" });
                             }}
-                            className="w-full py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
+                            className="w-full py-1.5 rounded-lg bg-brand-accent-600 hover:bg-brand-accent-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
                           >
                             <Video className="w-3.5 h-3.5" />
                             <span>Play Video</span>
@@ -1387,7 +1388,7 @@ export default function App() {
                         ) : (
                           <button
                             onClick={(e) => handleTurnIntoVideo(item, e)}
-                            className="w-full py-1.5 rounded-lg bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-400 hover:to-indigo-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
+                            className="w-full py-1.5 rounded-lg bg-gradient-to-r from-brand-accent-500 to-brand-600 hover:from-brand-accent-400 hover:to-brand-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
                           >
                             <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
                             <span>Animate</span>
@@ -1414,11 +1415,11 @@ export default function App() {
                             }}
                             className={`flex-1 py-1 px-1.5 rounded border text-[9px] flex items-center justify-center gap-1 transition cursor-pointer ${
                               isImageSaved(item.id)
-                                ? "bg-pink-950/30 border-pink-900/50 text-pink-400"
-                                : "bg-slate-900 border-slate-850 text-indigo-400"
+                                ? "bg-brand-accent-950/30 border-brand-accent-900/50 text-brand-accent-400"
+                                : "bg-slate-900 border-slate-850 text-brand-400"
                             }`}
                           >
-                            <Heart className={`w-2.5 h-2.5 ${isImageSaved(item.id) ? "fill-current text-pink-400" : "text-indigo-400"}`} />
+                            <Heart className={`w-2.5 h-2.5 ${isImageSaved(item.id) ? "fill-current text-brand-accent-400" : "text-brand-400"}`} />
                             {isImageSaved(item.id) ? "Saved" : "Save"}
                           </button>
 
@@ -1481,7 +1482,7 @@ export default function App() {
             {/* Bottom details card inside lightbox */}
             <div className="w-full max-w-3xl bg-slate-900/90 border border-slate-800/80 p-5 rounded-2xl space-y-3.5 text-xs text-left">
               <div className="space-y-1">
-                <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest font-mono">
+                <span className="text-[9px] font-bold text-brand-400 uppercase tracking-widest font-mono">
                   Concept Prompt
                 </span>
                 <p className="text-slate-200 font-medium italic text-sm">
@@ -1504,7 +1505,7 @@ export default function App() {
                 </div>
                 <div>
                   <span className="text-slate-500 block">Model Engine</span>
-                  <strong className="text-indigo-400/90 font-mono text-[10px] break-all">
+                  <strong className="text-brand-400/90 font-mono text-[10px] break-all">
                     {lightboxImage.model.split("/").pop()}
                   </strong>
                 </div>
@@ -1513,7 +1514,7 @@ export default function App() {
               <div className="flex flex-wrap gap-2 pt-2 justify-end">
                 <button
                   onClick={() => handleReuseSettings(lightboxImage)}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-1.5 rounded-lg transition text-xs cursor-pointer"
+                  className="bg-brand-600 hover:bg-brand-500 text-white font-semibold px-4 py-1.5 rounded-lg transition text-xs cursor-pointer"
                 >
                   Reuse Configuration
                 </button>
