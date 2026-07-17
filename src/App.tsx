@@ -126,7 +126,6 @@ const PresetIcon = ({ name, className = "w-5 h-5" }: { name: string; className?:
   }
 };
 
-// Get preset icon by name
 export default function App() {
   const [prompt, setPrompt] = useState("");
   const [selectedPresetId, setSelectedPresetId] = useState("none");
@@ -140,17 +139,137 @@ export default function App() {
   const [savedImages, setSavedImages] = useState<GeneratedImage[]>([]);
   const [galleryTab, setGalleryTab] = useState<"saved" | "history">("saved");
   const [isPromptExpanded, setIsPromptExpanded] = useState(false); // set to false so it is neat and simple by default
-  const [showPromptTips, setShowPromptTips] = useState(false);
   const [presetSearch, setPresetSearch] = useState("");
   const [presetFilter, setPresetFilter] = useState<string>("All");
   const [loadingPhraseIndex, setLoadingPhraseIndex] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<GeneratedImage | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Audio References
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const audioNodesRef = useRef<any[]>([]);
-  const audioTimerIdRef = useRef<any>(null);
+  // Image editing states
+  const [editInstruction, setEditInstruction] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
+  // Veo Video States
+  const [animatingItemIds, setAnimatingItemIds] = useState<Record<string, boolean>>({});
+  const [videoStatusMessage, setVideoStatusMessage] = useState<{ text: string; type: "success" | "info" | "error" } | null>(null);
+
+  // Auto-dismiss video status message
+  useEffect(() => {
+    if (videoStatusMessage) {
+      const timer = setTimeout(() => {
+        setVideoStatusMessage(null);
+      }, 7000);
+      return () => clearTimeout(timer);
+    }
+  }, [videoStatusMessage]);
+
+  const handleTurnIntoVideo = async (item: GeneratedImage, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (animatingItemIds[item.id]) return;
+
+    setAnimatingItemIds(prev => ({ ...prev, [item.id]: true }));
+    setVideoStatusMessage({
+      text: "Sending video generation request to Veo 3.1...",
+      type: "info",
+    });
+
+    try {
+      const response = await fetch("/api/generate-video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: item.prompt,
+          imageUrl: item.url,
+          aspectRatio: item.aspectRatio,
+          duration: 5,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to initiate video generation.");
+      }
+
+      const operationName = data.operationName;
+      if (!operationName) {
+        throw new Error("No video operation was initiated.");
+      }
+
+      // Enter polling loop
+      let isDone = false;
+      let attempts = 0;
+      const maxAttempts = 120; // Allow polling up to 6 minutes (120 * 3s)
+      
+      setVideoStatusMessage({
+        text: "Veo 3.1 is painting your video. This may take 1-3 minutes. Please stay on this page...",
+        type: "info",
+      });
+
+      while (!isDone && attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        attempts++;
+
+        const statusRes = await fetch("/api/video-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ operationName }),
+        });
+
+        if (!statusRes.ok) {
+          throw new Error("Failed to check video generation status.");
+        }
+
+        const statusData = await statusRes.json();
+        
+        if (statusData.error) {
+          throw new Error(statusData.error.message || "Veo 3.1 video generation failed.");
+        }
+
+        if (statusData.done) {
+          isDone = true;
+        }
+      }
+
+      if (!isDone) {
+        throw new Error("Video generation timed out. Please try again.");
+      }
+
+      const videoUrl = `/api/video-download?operationName=${encodeURIComponent(operationName)}`;
+
+      const updatedImage: GeneratedImage = {
+        ...item,
+        isAnimated: true,
+        animationUrl: videoUrl,
+      };
+
+      // Update savedImages
+      const updatedSaved = savedImages.map(img => img.id === item.id ? updatedImage : img);
+      setSavedImages(updatedSaved);
+      localStorage.setItem("alex_saved_masterpieces", JSON.stringify(updatedSaved));
+
+      // Update history if present
+      const updatedHistory = history.map(img => img.id === item.id ? updatedImage : img);
+      saveHistory(updatedHistory);
+
+      // Set active image so user can view it immediately
+      setActiveImage(updatedImage);
+
+      setVideoStatusMessage({
+        text: "Masterpiece successfully turned into a high-definition video using Veo 3.1!",
+        type: "success",
+      });
+    } catch (err: any) {
+      console.error(err);
+      setVideoStatusMessage({
+        text: err.message || "An unexpected error occurred while generating the video.",
+        type: "error",
+      });
+    } finally {
+      setAnimatingItemIds(prev => ({ ...prev, [item.id]: false }));
+    }
+  };
 
   const phraseIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const endOfWorkspaceRef = useRef<HTMLDivElement | null>(null);
@@ -210,180 +329,6 @@ export default function App() {
   };
 
   const isImageSaved = (id: string) => savedImages.some(img => img.id === id);
-
-  // Lofi Synthesizer Loops
-  const stopSynthesizer = () => {
-    if (audioTimerIdRef.current) {
-      clearTimeout(audioTimerIdRef.current);
-      audioTimerIdRef.current = null;
-    }
-    audioNodesRef.current.forEach((node) => {
-      try { node.stop(); } catch (e) {}
-      try { node.disconnect(); } catch (e) {}
-    });
-    audioNodesRef.current = [];
-    if (audioContextRef.current) {
-      try { audioContextRef.current.close(); } catch (e) {}
-      audioContextRef.current = null;
-    }
-  };
-
-  const playLofiSynthesizer = (track: string) => {
-    if (!window.AudioContext && !(window as any).webkitAudioContext) return;
-    stopSynthesizer();
-
-    try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      const ctx = new AudioCtx();
-      audioContextRef.current = ctx;
-
-      if (track === "synthwave") {
-        const playPulse = (time: number, freq: number, duration: number) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = "sawtooth";
-          osc.frequency.setValueAtTime(freq, time);
-
-          const filter = ctx.createBiquadFilter();
-          filter.type = "lowpass";
-          filter.frequency.setValueAtTime(500, time);
-
-          gain.gain.setValueAtTime(0.06, time);
-          gain.gain.exponentialRampToValueAtTime(0.001, time + duration - 0.05);
-
-          osc.connect(filter);
-          filter.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(time);
-          osc.stop(time + duration);
-          audioNodesRef.current.push(osc, gain);
-        };
-
-        let chordIndex = 0;
-        const chords = [
-          [110, 137.5, 165], // Am
-          [98, 123.47, 146.83], // G
-          [87.31, 110, 130.81], // F
-          [110, 137.5, 165], // Am
-        ];
-
-        const interval = 1.6;
-        const loop = () => {
-          if (!audioContextRef.current || audioContextRef.current.state === "closed") return;
-          const now = ctx.currentTime;
-          const currentChord = chords[chordIndex % chords.length];
-
-          currentChord.forEach((f) => {
-            playPulse(now, f * 2, interval);
-          });
-
-          for (let i = 0; i < 4; i++) {
-            playPulse(now + i * (interval / 4), currentChord[0], interval / 6);
-          }
-
-          chordIndex++;
-          const timerId = setTimeout(loop, interval * 1000);
-          audioTimerIdRef.current = timerId;
-        };
-        loop();
-      } else if (track === "lofi") {
-        const playRhodes = (time: number, freq: number, duration: number) => {
-          const osc1 = ctx.createOscillator();
-          const osc2 = ctx.createOscillator();
-          const gain = ctx.createGain();
-
-          osc1.type = "triangle";
-          osc2.type = "sine";
-
-          osc1.frequency.setValueAtTime(freq, time);
-          osc2.frequency.setValueAtTime(freq * 1.005, time);
-
-          const filter = ctx.createBiquadFilter();
-          filter.type = "lowpass";
-          filter.frequency.setValueAtTime(350, time);
-
-          gain.gain.setValueAtTime(0.1, time);
-          gain.gain.exponentialRampToValueAtTime(0.001, time + duration - 0.1);
-
-          osc1.connect(filter);
-          osc2.connect(filter);
-          filter.connect(gain);
-          gain.connect(ctx.destination);
-
-          osc1.start(time);
-          osc2.start(time);
-          osc1.stop(time + duration);
-          osc2.stop(time + duration);
-          audioNodesRef.current.push(osc1, osc2, gain);
-        };
-
-        let chordIndex = 0;
-        const chords = [
-          [130.81, 164.81, 196.00, 246.94], // Cmaj7
-          [146.83, 174.61, 220.00, 261.63], // Dm7
-          [130.81, 164.81, 196.00, 246.94], // Cmaj7
-          [110.00, 130.81, 164.81, 196.00], // Am7
-        ];
-
-        const interval = 2.4;
-        const loop = () => {
-          if (!audioContextRef.current || audioContextRef.current.state === "closed") return;
-          const now = ctx.currentTime;
-          const currentChord = chords[chordIndex % chords.length];
-
-          currentChord.forEach((f) => {
-            playRhodes(now, f, interval);
-          });
-
-          chordIndex++;
-          const timerId = setTimeout(loop, interval * 1000);
-          audioTimerIdRef.current = timerId;
-        };
-        loop();
-      } else if (track === "cosmic") {
-        const playSwell = (time: number, freq: number, duration: number) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = "sine";
-          osc.frequency.setValueAtTime(freq, time);
-
-          const filter = ctx.createBiquadFilter();
-          filter.type = "lowpass";
-          filter.frequency.setValueAtTime(250, time);
-
-          gain.gain.setValueAtTime(0, time);
-          gain.gain.linearRampToValueAtTime(0.06, time + duration / 2);
-          gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
-
-          osc.connect(filter);
-          filter.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(time);
-          osc.stop(time + duration);
-          audioNodesRef.current.push(osc, gain);
-        };
-
-        let index = 0;
-        const freqs = [146.83, 164.81, 196.00, 220.00];
-        const interval = 4.0;
-        const loop = () => {
-          if (!audioContextRef.current || audioContextRef.current.state === "closed") return;
-          const now = ctx.currentTime;
-
-          playSwell(now, freqs[index % freqs.length] / 2, interval);
-          playSwell(now + 1.0, freqs[(index + 1) % freqs.length], interval - 1.0);
-          playSwell(now + 2.0, freqs[(index + 2) % freqs.length] * 1.5, interval - 2.0);
-
-          index++;
-          const timerId = setTimeout(loop, interval * 1000);
-          audioTimerIdRef.current = timerId;
-        };
-        loop();
-      }
-    } catch (error) {
-      console.error("Audio synthesiser initialization failed", error);
-    }
-  };
 
   // Get active preset
   const activePreset = STYLE_PRESETS.find(p => p.id === selectedPresetId) || STYLE_PRESETS[0];
@@ -488,6 +433,57 @@ export default function App() {
     }
   };
 
+  // Edit Image calling our server-side API
+  const handleEditImage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeImage) return;
+    if (!editInstruction.trim()) return;
+
+    setIsEditing(true);
+    setEditError(null);
+    setErrorMessage(null); // Clear any primary generation error
+
+    try {
+      const response = await fetch("/api/edit-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          imageUrl: activeImage.url,
+          instruction: editInstruction,
+          quality: selectedQualityId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to edit your image.");
+      }
+
+      const editedImage: GeneratedImage = {
+        id: `img_${Date.now()}`,
+        url: data.imageUrl,
+        prompt: data.prompt, // the edit instruction
+        enhancedPrompt: `Original prompt: "${activeImage.prompt}" -> Edited with instruction: "${data.prompt}"`,
+        styleId: activeImage.styleId,
+        styleName: activeImage.styleName,
+        aspectRatio: activeImage.aspectRatio,
+        quality: activeImage.quality,
+        model: data.model,
+        timestamp: data.timestamp,
+      };
+
+      setActiveImage(editedImage);
+      saveHistory([editedImage, ...history]);
+      setEditInstruction(""); // clear input after success
+    } catch (err: any) {
+      console.error(err);
+      setEditError(err.message || "An unexpected error occurred while editing the image.");
+    } finally {
+      setIsEditing(false);
+    }
+  };
+
   // Copy enhanced prompt to clipboard
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -526,7 +522,7 @@ export default function App() {
   };
 
   // Preset filter categories
-  const categories = ["All", "Artistic", "Realistic", "Illustration", "Retro", "Cinematic"];
+  const categories = ["All", "Artistic", "Realistic", "Illustration", "Retro", "Cinematic", "Fantasy & Mythical", "Cosmic & Sci-Fi", "Abstract & Geometric", "Cute & Whimsical", "Architectural & Spaces"];
 
   // Filtered style presets
   const filteredPresets = STYLE_PRESETS.filter(p => {
@@ -558,10 +554,10 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-100 via-indigo-100 to-indigo-200 flex items-center gap-2">
-                Ian❤️Alex
+                Alex's Imagination Station
               </h1>
               <p className="text-xs text-indigo-300 font-medium tracking-wide flex items-center gap-1">
-                <Heart className="w-3 h-3 text-pink-500 fill-pink-500" /> OUR CREATIVE CANVAS
+                <Heart className="w-3 h-3 text-pink-500 fill-pink-500" /> HER CREATIVE CANVAS
               </p>
             </div>
           </div>
@@ -614,52 +610,6 @@ export default function App() {
                   <div className="absolute bottom-3 right-3 text-[10px] font-mono text-slate-600">
                     {prompt.length}/800
                   </div>
-                </div>
-
-                <div className="pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setShowPromptTips(!showPromptTips)}
-                    className="text-xs text-slate-400 hover:text-indigo-300 transition flex items-center gap-1.5 cursor-pointer font-medium"
-                  >
-                    <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>{showPromptTips ? "Hide Prompting Tips" : "Show Prompting Tips & Tricks"}</span>
-                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showPromptTips ? "rotate-180" : ""}`} />
-                  </button>
-
-                  <AnimatePresence initial={false}>
-                    {showPromptTips && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="bg-slate-950/50 border border-slate-800/60 rounded-xl p-4 mt-3 space-y-3 text-xs leading-relaxed text-slate-300">
-                          <p className="font-bold text-slate-200 text-[11px] uppercase tracking-wider text-indigo-400">💡 Creative Prompting Tips for Alex</p>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
-                            <div className="space-y-1">
-                              <span className="font-semibold text-slate-200 text-[11px] flex items-center gap-1">🌸 Describe Subjects Fully</span>
-                              <p className="text-slate-400 text-[11px]">Instead of typing <code className="text-indigo-300 bg-indigo-950/30 px-1 py-0.5 rounded">a kitten</code>, describe its look: <code className="text-indigo-300 bg-indigo-950/30 px-1 py-0.5 rounded">A tiny fluffy tabby kitten with big green eyes sleeping inside a wool basket</code>.</p>
-                            </div>
-                            <div className="space-y-1">
-                              <span className="font-semibold text-slate-200 text-[11px] flex items-center gap-1">✨ Paint the Atmosphere & Light</span>
-                              <p className="text-slate-400 text-[11px]">Specify lighting and surroundings like <code className="text-indigo-300 bg-indigo-950/30 px-1 py-0.5 rounded">glowing candles</code>, <code className="text-indigo-300 bg-indigo-950/30 px-1 py-0.5 rounded">warm golden hour sunshine</code>, or <code className="text-indigo-300 bg-indigo-950/30 px-1 py-0.5 rounded">misty pine forest background</code>.</p>
-                            </div>
-                            <div className="space-y-1">
-                              <span className="font-semibold text-slate-200 text-[11px] flex items-center gap-1">🎨 Evoke Emotional Feelings</span>
-                              <p className="text-slate-400 text-[11px]">Adding mood words like <code className="text-indigo-300 bg-indigo-950/30 px-1 py-0.5 rounded">cozy</code>, <code className="text-indigo-300 bg-indigo-950/30 px-1 py-0.5 rounded">whimsical</code>, <code className="text-indigo-300 bg-indigo-950/30 px-1 py-0.5 rounded">peaceful</code>, or <code className="text-indigo-300 bg-indigo-950/30 px-1 py-0.5 rounded">mysterious</code> helps the neural canvas match the vibe.</p>
-                            </div>
-                            <div className="space-y-1">
-                              <span className="font-semibold text-slate-200 text-[11px] flex items-center gap-1">🪄 Use Magical Presets</span>
-                              <p className="text-slate-400 text-[11px]">Keep your core text prompt clean, then click any preset style below (like <code className="text-indigo-300 bg-indigo-950/30 px-1 py-0.5 rounded">Studio Ghibli</code> or <code className="text-indigo-300 bg-indigo-950/30 px-1 py-0.5 rounded">Watercolor</code>) to enhance it automatically!</p>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </div>
               </div>
 
@@ -952,17 +902,39 @@ export default function App() {
                   </div>
                 )}
 
-                {/* 3. Render Image */}
+                {/* 3. Render Image & Motion Player */}
                 {activeImage && !isGenerating && (
                   <div className="w-full flex flex-col items-center justify-center space-y-4">
                     <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-900 shadow-2xl w-full max-w-lg aspect-square flex items-center justify-center">
-                      
-                      <motion.img
-                        src={activeImage.url}
-                        alt={activeImage.prompt}
-                        className="max-h-[420px] max-w-full object-contain select-none"
-                        referrerPolicy="no-referrer"
-                      />
+                      {activeImage.isAnimated && activeImage.animationUrl ? (
+                        <video
+                          src={activeImage.animationUrl}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="w-full h-full object-contain select-none"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <motion.img
+                          src={activeImage.url}
+                          alt={activeImage.prompt}
+                          className="max-h-[420px] max-w-full object-contain select-none"
+                          referrerPolicy="no-referrer"
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.4 }}
+                        />
+                      )}
+
+                      {/* Video indicator badge */}
+                      {activeImage.isAnimated && (
+                        <div className="absolute top-3 left-3 bg-indigo-950/90 border border-indigo-500/30 text-indigo-300 rounded-full px-2.5 py-1 text-[9px] font-bold font-mono tracking-wider flex items-center gap-1 z-20 shadow-md">
+                          <Video className="w-3.5 h-3.5 text-pink-400 animate-pulse" />
+                          <span>VEO 3.1 ANIMATED VIDEO</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -974,7 +946,7 @@ export default function App() {
                 <div className="bg-slate-900/40 border-t border-slate-800/80 p-5 space-y-4">
                   <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider font-mono">
-                      Core Concept Prompt
+                      Current Masterpiece Concept
                     </span>
                     <p className="text-xs font-semibold text-slate-200 leading-relaxed italic">
                       "{activeImage.prompt}"
@@ -997,8 +969,80 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Alex's satisfying Save/Download Row */}
-                  <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
+                  {/* 🎨 NEW: Quick Interactive Image Editing 🎨 */}
+                  <div className="border-t border-slate-800/60 pt-3.5 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="p-1 rounded-md bg-indigo-600/10 text-indigo-400">
+                        <Paintbrush className="w-3.5 h-3.5" />
+                      </span>
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-200">Refine / Edit This Image</h4>
+                        <p className="text-[10px] text-slate-500">Add, remove, or modify elements (e.g., "make the sky purple", "add flowers")</p>
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleEditImage} className="flex gap-2">
+                      <input
+                        type="text"
+                        value={editInstruction}
+                        onChange={(e) => setEditInstruction(e.target.value)}
+                        placeholder="What would you like to change?..."
+                        disabled={isEditing || isGenerating}
+                        className="flex-1 bg-slate-950 border border-slate-850 focus:border-indigo-500/80 rounded-xl px-3 py-2 text-xs placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-indigo-500/30 text-slate-200"
+                      />
+                      <button
+                        type="submit"
+                        disabled={isEditing || isGenerating || !editInstruction.trim()}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                          !editInstruction.trim() || isEditing || isGenerating
+                            ? "bg-slate-800/80 text-slate-500 border border-slate-700/30 cursor-not-allowed"
+                            : "bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer shadow-md"
+                        }`}
+                      >
+                        {isEditing ? (
+                          <>
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                            Editing...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                            Apply
+                          </>
+                        )}
+                      </button>
+                    </form>
+
+                    {editError && (
+                      <p className="text-[10px] text-red-400 bg-red-950/20 border border-red-900/30 rounded-lg p-2 leading-relaxed">
+                        {editError}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Save/Download Row */}
+                  <div className="flex flex-col sm:flex-row gap-2.5 pt-1.5 border-t border-slate-800/60">
+                    {!activeImage.isAnimated && (
+                      animatingItemIds[activeImage.id] ? (
+                        <button
+                          disabled
+                          className="flex-1 py-3 px-4 rounded-xl text-xs font-bold bg-pink-950/20 border border-pink-500/30 text-pink-400 flex items-center justify-center gap-2"
+                        >
+                          <RefreshCw className="w-4 h-4 animate-spin text-pink-400" />
+                          Animating...
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={(e) => handleTurnIntoVideo(activeImage, e)}
+                          className="flex-1 py-3 px-4 rounded-xl text-xs font-bold bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-400 hover:to-indigo-500 text-white transition flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-[0.98]"
+                        >
+                          <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+                          Animate
+                        </button>
+                      )
+                    )}
+
                     {isImageSaved(activeImage.id) ? (
                       <button
                         type="button"
@@ -1017,6 +1061,19 @@ export default function App() {
                         <Heart className="w-4 h-4" />
                         Save to Studio Collection
                       </button>
+                    )}
+
+                    {activeImage.isAnimated && activeImage.animationUrl && (
+                      <a
+                        href={activeImage.animationUrl}
+                        download={`alex_video_${activeImage.id}.mp4`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="py-3 px-5 rounded-xl text-xs font-bold bg-indigo-950 hover:bg-indigo-900 text-indigo-300 border border-indigo-850 transition flex items-center justify-center gap-1.5 active:scale-[0.98]"
+                      >
+                        <Video className="w-4 h-4 text-pink-400 animate-pulse" />
+                        Download MP4
+                      </a>
                     )}
 
                     <a
@@ -1040,6 +1097,39 @@ export default function App() {
         {/* SECTION: Gallery & Collections */}
         <section id="app_gallery" className="mt-12 bg-slate-900/30 border border-slate-800/60 rounded-2xl p-5 sm:p-6 backdrop-blur-sm space-y-6">
           
+          {videoStatusMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className={`p-3.5 rounded-xl text-xs flex gap-2 border leading-relaxed ${
+                videoStatusMessage.type === "success"
+                  ? "bg-emerald-950/40 border-emerald-500/30 text-emerald-300"
+                  : videoStatusMessage.type === "error"
+                  ? "bg-red-950/40 border-red-500/30 text-red-300"
+                  : "bg-indigo-950/40 border-indigo-500/30 text-indigo-300"
+              }`}
+            >
+              {videoStatusMessage.type === "success" ? (
+                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+              ) : videoStatusMessage.type === "error" ? (
+                <ShieldAlert className="w-4 h-4 text-red-400 shrink-0" />
+              ) : (
+                <Info className="w-4 h-4 text-indigo-400 shrink-0" />
+              )}
+              <div className="flex-1">
+                <span className="font-bold block mb-0.5">Veo Video Engine</span>
+                {videoStatusMessage.text}
+              </div>
+              <button
+                onClick={() => setVideoStatusMessage(null)}
+                className="text-[10px] opacity-75 hover:opacity-100 transition px-1"
+              >
+                Dismiss
+              </button>
+            </motion.div>
+          )}
+
           {/* Tabs Navigation Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
             
@@ -1143,36 +1233,12 @@ export default function App() {
                         <Heart className="w-3.5 h-3.5 fill-current text-white" />
                       </div>
 
-                      {/* Hover controls overlay */}
-                      <div className="absolute inset-0 bg-slate-950/85 opacity-0 group-hover:opacity-100 transition duration-150 flex flex-col items-center justify-center gap-2 p-2 text-center z-20">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setLightboxImage(item);
-                          }}
-                          className="bg-slate-900 text-slate-200 hover:text-white p-1.5 rounded-lg border border-slate-800 hover:border-slate-700 transition"
-                          title="View Fullscreen"
-                        >
-                          <Maximize2 className="w-3.5 h-3.5" />
-                        </button>
-                        
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleReuseSettings(item);
-                          }}
-                          className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[10px] px-2.5 py-1.5 rounded-lg transition"
-                        >
-                          Reuse Config
-                        </button>
-
-                        <button
-                          onClick={(e) => removeFromCollection(item.id, e)}
-                          className="text-[9px] text-pink-400 hover:text-pink-300 hover:underline mt-1 font-semibold block"
-                        >
-                          Unsave
-                        </button>
-                      </div>
+                      {/* Video Indicator Badge */}
+                      {item.isAnimated && (
+                        <div className="absolute top-2.5 left-2.5 bg-indigo-950/95 border border-indigo-500/35 text-indigo-300 p-1 rounded-md shadow-md z-10">
+                          <Video className="w-3.5 h-3.5 text-pink-400 animate-pulse" />
+                        </div>
+                      )}
 
                       {/* Style label */}
                       <div className="absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur-sm px-2 py-0.5 rounded text-[8px] font-mono text-pink-300 border border-slate-800/40">
@@ -1181,19 +1247,63 @@ export default function App() {
                     </div>
 
                     {/* Small card details */}
-                    <div className="p-3 space-y-1 bg-slate-900/40">
-                      <p className="text-[10px] text-slate-300 font-medium line-clamp-2 leading-relaxed italic">
-                        "{item.prompt}"
-                      </p>
-                      <div className="flex items-center justify-between text-[9px] text-slate-500 pt-1.5 border-t border-slate-800/50">
-                        <span>{item.aspectRatio}</span>
-                        <button
-                          onClick={(e) => removeFromCollection(item.id, e)}
-                          className="text-slate-500 hover:text-pink-400 p-0.5 transition shrink-0"
-                          title="Unsave Image"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
+                    <div className="p-3 bg-slate-900/40 flex-1 flex flex-col justify-between space-y-3">
+                      <div className="space-y-1">
+                        <div className="text-[8px] font-mono text-slate-500">
+                          {item.aspectRatio}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 pt-2 border-t border-slate-800/50">
+                        {/* Animate / Play Action Button */}
+                        {animatingItemIds[item.id] ? (
+                          <div className="w-full py-1.5 rounded-lg bg-pink-950/20 border border-pink-500/30 text-pink-400 font-bold text-[10px] flex items-center justify-center gap-1">
+                            <RefreshCw className="w-3 h-3 animate-spin" />
+                            <span>Animating...</span>
+                          </div>
+                        ) : item.isAnimated ? (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveImage(item);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }}
+                            className="w-full py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
+                          >
+                            <Video className="w-3.5 h-3.5" />
+                            <span>Play Video</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={(e) => handleTurnIntoVideo(item, e)}
+                            className="w-full py-1.5 rounded-lg bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-400 hover:to-indigo-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
+                          >
+                            <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
+                            <span>Animate</span>
+                          </button>
+                        )}
+
+                        {/* Secondary Action Row: Fullscreen and Unsave */}
+                        <div className="flex items-center justify-between gap-1.5 pt-0.5">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLightboxImage(item);
+                            }}
+                            className="flex-1 py-1 px-1.5 rounded bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 text-[9px] flex items-center justify-center gap-1 transition cursor-pointer"
+                          >
+                            <Maximize2 className="w-2.5 h-2.5" />
+                            Fullscreen
+                          </button>
+
+                          <button
+                            onClick={(e) => removeFromCollection(item.id, e)}
+                            className="flex-1 py-1 px-1.5 rounded bg-slate-900 border border-slate-800 text-pink-400 hover:text-pink-300 text-[9px] flex items-center justify-center gap-1 transition cursor-pointer"
+                          >
+                            <Trash2 className="w-2.5 h-2.5" />
+                            Unsave
+                          </button>
+                        </div>
                       </div>
                     </div>
 
@@ -1238,40 +1348,6 @@ export default function App() {
                         </div>
                       )}
 
-                      {/* Hover controls overlay */}
-                      <div className="absolute inset-0 bg-slate-950/85 opacity-0 group-hover:opacity-100 transition duration-150 flex flex-col items-center justify-center gap-2 p-2 text-center">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setLightboxImage(item);
-                          }}
-                          className="bg-slate-900 text-slate-200 hover:text-white p-1.5 rounded-lg border border-slate-800 hover:border-slate-700 transition"
-                          title="View Fullscreen"
-                        >
-                          <Maximize2 className="w-3.5 h-3.5" />
-                        </button>
-                        
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleReuseSettings(item);
-                          }}
-                          className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[10px] px-2.5 py-1.5 rounded-lg transition"
-                        >
-                          Reuse Config
-                        </button>
-
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            isImageSaved(item.id) ? removeFromCollection(item.id) : saveToCollection(item);
-                          }}
-                          className="text-[9px] text-indigo-400 hover:text-indigo-300 hover:underline mt-1 font-semibold block"
-                        >
-                          {isImageSaved(item.id) ? "Unsave" : "Save Image"}
-                        </button>
-                      </div>
-
                       {/* Style preset indicator label overlay on image */}
                       <div className="absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur-sm px-2 py-0.5 rounded text-[8px] font-mono text-indigo-300 border border-slate-800/40">
                         {item.styleName}
@@ -1279,19 +1355,81 @@ export default function App() {
                     </div>
 
                     {/* Small card details */}
-                    <div className="p-3 space-y-1 bg-slate-900/40">
-                      <p className="text-[10px] text-slate-300 font-medium line-clamp-2 leading-relaxed italic">
-                        "{item.prompt}"
-                      </p>
-                      <div className="flex items-center justify-between text-[9px] text-slate-500 pt-1.5 border-t border-slate-800/50">
-                        <span>{item.aspectRatio}</span>
-                        <button
-                          onClick={(e) => handleDeleteItem(item.id, e)}
-                          className="text-slate-500 hover:text-red-400 p-0.5 transition shrink-0"
-                          title="Delete from history"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
+                    <div className="p-3 bg-slate-900/40 flex-1 flex flex-col justify-between space-y-3">
+                      <div className="space-y-1">
+                        <p className="text-[10px] text-slate-300 font-medium line-clamp-2 leading-relaxed italic">
+                          "{item.prompt}"
+                        </p>
+                        <div className="text-[8px] font-mono text-slate-500">
+                          {item.aspectRatio}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 pt-2 border-t border-slate-800/50">
+                        {/* Animate / Play Action Button */}
+                        {animatingItemIds[item.id] ? (
+                          <div className="w-full py-1.5 rounded-lg bg-pink-950/20 border border-pink-500/30 text-pink-400 font-bold text-[10px] flex items-center justify-center gap-1">
+                            <RefreshCw className="w-3 h-3 animate-spin" />
+                            <span>Animating...</span>
+                          </div>
+                        ) : item.isAnimated ? (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveImage(item);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }}
+                            className="w-full py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
+                          >
+                            <Video className="w-3.5 h-3.5" />
+                            <span>Play Video</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={(e) => handleTurnIntoVideo(item, e)}
+                            className="w-full py-1.5 rounded-lg bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-400 hover:to-indigo-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-md transition active:scale-95 cursor-pointer"
+                          >
+                            <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
+                            <span>Animate</span>
+                          </button>
+                        )}
+
+                        {/* Static Actions: Fullscreen, Save/Unsave, and Delete */}
+                        <div className="flex items-center justify-between gap-1.5">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLightboxImage(item);
+                            }}
+                            className="flex-1 py-1 px-1.5 rounded bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 text-[9px] flex items-center justify-center gap-1 transition cursor-pointer"
+                          >
+                            <Maximize2 className="w-2.5 h-2.5" />
+                            Fullscreen
+                          </button>
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              isImageSaved(item.id) ? removeFromCollection(item.id, e) : saveToCollection(item);
+                            }}
+                            className={`flex-1 py-1 px-1.5 rounded border text-[9px] flex items-center justify-center gap-1 transition cursor-pointer ${
+                              isImageSaved(item.id)
+                                ? "bg-pink-950/30 border-pink-900/50 text-pink-400"
+                                : "bg-slate-900 border-slate-850 text-indigo-400"
+                            }`}
+                          >
+                            <Heart className={`w-2.5 h-2.5 ${isImageSaved(item.id) ? "fill-current text-pink-400" : "text-indigo-400"}`} />
+                            {isImageSaved(item.id) ? "Saved" : "Save"}
+                          </button>
+
+                          <button
+                            onClick={(e) => handleDeleteItem(item.id, e)}
+                            className="p-1 rounded bg-slate-900 border border-slate-800 text-slate-500 hover:text-red-400 transition cursor-pointer"
+                            title="Delete draft"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
                       </div>
                     </div>
 
@@ -1305,11 +1443,7 @@ export default function App() {
       </main>
 
       {/* FOOTER */}
-      <footer id="app_footer" className="mt-16 border-t border-slate-900 bg-slate-950/40 py-8 text-center text-xs text-slate-500 space-y-2">
-        <p>
-          Alex can be a pain in Ian's ass but he loves her anyway
-        </p>
-      </footer>
+      <footer id="app_footer" className="mt-16 py-4" />
 
       {/* FULLSCREEN LIGHTBOX MODAL */}
       <AnimatePresence>

@@ -2,7 +2,7 @@ export interface StylePreset {
   id: string;
   name: string;
   description: string;
-  category: "Artistic" | "Realistic" | "Illustration" | "Retro" | "Cinematic";
+  category: string;
   promptEnhancement: string;
   icon: string; // Name of Lucide icon
   examplePrompt: string;

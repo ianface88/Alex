@@ -423,6 +423,465 @@ export const STYLE_PRESETS: StylePreset[] = [
     promptEnhancement: ", dark fantasy oil painting style, grim gothic atmosphere, muted moody colors, foggy medieval castle background, dynamic chiaroscuro lighting, intricate dark armor and leather textures, dramatic and high detail",
     icon: "ShieldAlert",
     examplePrompt: "A cloaked wizard holding a staff with a faintly glowing crystal atop a cliff"
+  },
+  // Fantasy & Mythical
+  {
+    id: "elven-glade",
+    name: "Elven Glade",
+    description: "Luminous, mystical elven woodland with glowing flora, ancient white bark trees, and gentle twilight beams.",
+    category: "Fantasy & Mythical",
+    promptEnhancement: ", high fantasy elven glade, ethereal glowing flowers, ancient white trees, soft purple and teal twilight lighting, majestic magical atmosphere, detailed digital painting",
+    icon: "Sparkles",
+    examplePrompt: "A sacred crystal well surrounded by glowing blue water lilies under a starry sky"
+  },
+  {
+    id: "celestial-cosmic",
+    name: "Celestial Cosmic Dream",
+    description: "Surreal fusion of gold and stardust, showing characters with stellar patterns and glowing golden nebulae.",
+    category: "Fantasy & Mythical",
+    promptEnhancement: ", celestial cosmic fantasy art, shimmering golden nebulae, glowing dust motes, deep purple space, ethereal divine mood, golden lines and constellation patterns",
+    icon: "Orbit",
+    examplePrompt: "A beautiful celestial goddess whose hair flows into swirling purple galaxies"
+  },
+  {
+    id: "dragon-den",
+    name: "Dragon's Flame Cavern",
+    description: "Subterranean dark volcanic lair with rivers of glowing molten lava and glistening dragon scales.",
+    category: "Fantasy & Mythical",
+    promptEnhancement: ", dark fantasy volcanic cavern, flowing rivers of liquid orange magma, dramatic volcanic heat haze, glistening metallic scales, fiery orange and dark obsidian lighting, epic fantasy art",
+    icon: "Flame",
+    examplePrompt: "A sleeping black dragon curled around a massive mound of glowing gold coins"
+  },
+  {
+    id: "crystal-cavern",
+    name: "Bioluminescent Crystal Cave",
+    description: "Subterranean paradise filled with giant glowing purple amethyst spikes and sparkling mineral walls.",
+    category: "Fantasy & Mythical",
+    promptEnhancement: ", majestic bioluminescent cave, giant glowing purple amethyst and quartz crystals, reflecting light on water pools, glittering limestone walls, magical deep cave lighting",
+    icon: "Gem",
+    examplePrompt: "A mystical glowing underground waterfall pooling into a turquoise crystal basin"
+  },
+  {
+    id: "enchanted-castle",
+    name: "Castle in the Clouds",
+    description: "Majestic fairytale spires floating on dense puffy clouds during a dreamy peach and violet sunset.",
+    category: "Fantasy & Mythical",
+    promptEnhancement: ", whimsical fairytale fantasy castle floating on soft voluminous white clouds, towering golden spires, magical glowing windows, peach and violet sunset glow, dreaming masterwork",
+    icon: "Castle",
+    examplePrompt: "A soaring magical academy with bridges connecting floating rock islands in the sky"
+  },
+  {
+    id: "dark-necromancy",
+    name: "Eerie Necromancer Fire",
+    description: "Gothic dark fantasy with glowing emerald soul fire, ancient runic circles, and dark stone columns.",
+    category: "Fantasy & Mythical",
+    promptEnhancement: ", grim dark gothic fantasy, glowing green soul fire, ancient stone sacrificial circle, ominous floating dark shadows, high-contrast creepy green and black lighting, dramatic oil painting",
+    icon: "Skull",
+    examplePrompt: "An ancient dark altar with a floating grimoire book glowing with eerie green fire"
+  },
+  {
+    id: "mermaid-reef",
+    name: "Siren's Deep Reef",
+    description: "A gorgeous underwater kingdom with glowing neon coral reefs, playful sea turtles, and ancient sunken pillars.",
+    category: "Fantasy & Mythical",
+    promptEnhancement: ", breathtaking underwater fantasy ocean, glowing neon coral reefs, majestic sunken Grecian marble ruins, schools of translucent glowing fish, beautiful sunbeams piercing deep blue water",
+    icon: "Anchor",
+    examplePrompt: "A majestic sub-aquatic throne carved of white pearl in an underwater cavern"
+  },
+  {
+    id: "phoenix-rebirth",
+    name: "Phoenix Rebirth Flame",
+    description: "A magnificent blazing firebird rising from a pile of golden ashes, exploding with sparkling fire embers.",
+    category: "Fantasy & Mythical",
+    promptEnhancement: ", magnificent phoenix bird, body made of blazing orange and gold flames, rising from burning embers, sparkling magical particles, dramatic high contrast fiery studio lighting, epic masterpiece",
+    icon: "Flame",
+    examplePrompt: "A majestic firebird stretching its wings, shedding glowing embers in a dark forest"
+  },
+  {
+    id: "rune-magic",
+    name: "Monolithic Runestones",
+    description: "Mysterious ancient standing stones etched with glowing blue magical symbols under a foggy night sky.",
+    category: "Fantasy & Mythical",
+    promptEnhancement: ", celtic standing runestones, glowing neon blue ancient runes, thick rolling mountain fog, eerie moonlit night, high detail mysterious atmosphere, moody digital painting",
+    icon: "Wand2",
+    examplePrompt: "A lone traveler standing before a giant circle of glowing runestones in the mist"
+  },
+  {
+    id: "fairy-grove",
+    name: "Whimsical Pixie Village",
+    description: "Microscopic fairytale forest with glowing pink toadstools and cute tiny houses made of acorns.",
+    category: "Fantasy & Mythical",
+    promptEnhancement: ", macro fairytale pixie grove, glowing pink and orange mushrooms, cute tiny acorn and snail shell houses, floating golden pollen particles, whimsical soft focus, magical wonderland",
+    icon: "Sparkles",
+    examplePrompt: "A cozy tiny hollow log cottage with a warm glowing chimney inside a mossy forest"
+  },
+
+  // Cosmic & Sci-Fi
+  {
+    id: "cyber-grid",
+    name: "Cyber Grid Matrix",
+    description: "Abstract 3D digital grid stretching into infinity, floating digital cubes, and bright cyan laser lines.",
+    category: "Cosmic & Sci-Fi",
+    promptEnhancement: ", futuristic cyber grid space, infinite neon cyan laser lines, floating glowing 3D wireframe cubes, virtual reality digital matrix, high-tech abstract cyber design",
+    icon: "Grid",
+    examplePrompt: "A glowing futuristic gateway constructed of bright blue laser beams on a grid floor"
+  },
+  {
+    id: "deep-nebula",
+    name: "Supernova Stellar Nebula",
+    description: "Breathtaking deep-space view of swirling pink and teal gas clouds, bright young stars, and cosmic dust.",
+    category: "Cosmic & Sci-Fi",
+    promptEnhancement: ", swirling stellar nebula gas clouds, vibrant hot pink and deep teal colors, millions of twinkling distant stars, celestial hyper-detailed cosmos",
+    icon: "Orbit",
+    examplePrompt: "A massive spiral galaxy spinning slowly near a shining bright gold star"
+  },
+  {
+    id: "retro-futurism",
+    name: "Retro-Futuristic Space",
+    description: "1950s atomic age sci-fi style with sleek chrome spaceships, round bubble-helmet spacesuits, and red desert planet dunes.",
+    category: "Cosmic & Sci-Fi",
+    promptEnhancement: ", 1950s atomic age pulp sci-fi illustration, sleek polished chrome rocket ship, astronauts in bubble helmet suits, saturated vintage technicolor, nostalgic retro space exploration",
+    icon: "Compass",
+    examplePrompt: "A retro rocket landing on a rocky purple moon under a giant ringed green planet"
+  },
+  {
+    id: "alien-biosphere",
+    name: "Alien Bioluminescent Forest",
+    description: "Bizarre alien landscape with tall spiral trees, glowing blue grass, and triple moons in the sky.",
+    category: "Cosmic & Sci-Fi",
+    promptEnhancement: ", exotic alien biosphere, towering pink spiral plants, glowing bioluminescent spores floating, vibrant alien forest, triple moons hanging in a dark indigo sky, epic otherworldly nature",
+    icon: "Leaf",
+    examplePrompt: "An exotic alien lake with glowing turquoise water reflecting multi-colored stars"
+  },
+  {
+    id: "mech-hangar",
+    name: "Massive Mech Hangar",
+    description: "Industrial sci-fi hangar with a giant robotic battlesuit being repaired by yellow crane arms, sparks flying.",
+    category: "Cosmic & Sci-Fi",
+    promptEnhancement: ", cinematic industrial sci-fi mech bay, colossal humanoid robot, robotic repair crane arms, shower of bright yellow sparks, steel catwalks, low-key dramatic high-contrast lighting",
+    icon: "Wrench",
+    examplePrompt: "A towering white and blue robotic mech suit parked in a high-tech facility hangar"
+  },
+  {
+    id: "solar-punk",
+    name: "Solarpunk Green Utopia",
+    description: "Futuristic eco-city of curved white stone skyscrapers, overflowing hanging gardens, solar panels, and clean blue skies.",
+    category: "Cosmic & Sci-Fi",
+    promptEnhancement: ", solarpunk architectural masterpiece, high-tech eco skyscrapers covered in hanging gardens and waterfalls, integrated sleek solar arrays, flying solar gliders, bright clean morning sun",
+    icon: "Sun",
+    examplePrompt: "A beautiful public courtyard in a futuristic city with families walking among trees and sleek solar pods"
+  },
+  {
+    id: "starship-bridge",
+    name: "Starship Command Bridge",
+    description: "Sleek sci-fi spaceship bridge looking out of a giant glass windshield at a starry sky accelerating into warp speed.",
+    category: "Cosmic & Sci-Fi",
+    promptEnhancement: ", interior of starship control bridge, futuristic holographic control panels, massive panoramic cockpit glass window, star trails warping into streaks of light, sleek interstellar vessel",
+    icon: "Monitor",
+    examplePrompt: "A starship pilot seat facing a giant curved viewscreen showing a beautiful red nebula"
+  },
+  {
+    id: "cybernetic-organic",
+    name: "Cybernetic Bio-Organism",
+    description: "Elegant blend of smooth white ceramic plates, exposed copper wiring, and glowing neon organic muscle fibers.",
+    category: "Cosmic & Sci-Fi",
+    promptEnhancement: ", high-tech bio-mechanical design, polished white ceramic plate armor, intricate copper circuits, glowing green muscle fibers, high-contrast macro studio shot, futuristic cyberpunk aesthetic",
+    icon: "Shield",
+    examplePrompt: "A mechanical robotic butterfly with delicate translucent wings filled with glowing circuits"
+  },
+  {
+    id: "hologram-project",
+    name: "Holographic Blue Laser",
+    description: "Flickering translucent blue laser wireframe of objects or creatures, complete with retro scanlines and digital glitch.",
+    category: "Cosmic & Sci-Fi",
+    promptEnhancement: ", glowing blue laser holographic projection, semi-translucent 3D wireframe, subtle retro scanlines, digital noise glitch, dark room studio backdrop, high contrast technical hologram",
+    icon: "Zap",
+    examplePrompt: "A detailed 3D hologram of a futuristic tiger leaping out from a tablet screen"
+  },
+  {
+    id: "asteroid-mining",
+    name: "Asteroid Industrial Mining",
+    description: "Rugged industrial spacecraft drilling into a massive dark asteroid in deep space, with flying rock debris.",
+    category: "Cosmic & Sci-Fi",
+    promptEnhancement: ", rugged industrial sci-fi space scene, mammoth dark rocky asteroid, heavy drilling spaceship emitting high-power laser beams, bright sparks, dark void of space, hyper-realistic details",
+    icon: "Hammer",
+    examplePrompt: "A group of mechanical space rovers drilling rock in a dusty crater under a massive blue nebula"
+  },
+
+  // Abstract & Geometric
+  {
+    id: "bauhaus-modern",
+    name: "Bauhaus Geometric Art",
+    description: "Elegant minimalist design using bold primary colors (red, blue, yellow) and clean balanced geometric shapes.",
+    category: "Abstract & Geometric",
+    promptEnhancement: ", classic Bauhaus design poster, bold primary red and blue and yellow color block, clean geometric circles and triangles, minimal graphic design, vintage paper textures, abstract modern art",
+    icon: "Activity",
+    examplePrompt: "An abstract face made of geometric red circles, black lines, and yellow triangles"
+  },
+  {
+    id: "memphis-pop",
+    name: "Memphis Pattern Pop",
+    description: "Sass and energy of the 1980s with playful squiggles, pastel polka dots, and bold black confetti outlines.",
+    category: "Abstract & Geometric",
+    promptEnhancement: ", 1980s Memphis group design pattern, bright pastel pink and mint colors, black and white diagonal stripes, floating squiggles and dots, pop art, high energy retro aesthetic",
+    icon: "Palette",
+    examplePrompt: "A playful abstract landscape with floating pastel spheres and striped geometric stairs"
+  },
+  {
+    id: "fluid-acrylic",
+    name: "Fluid Acrylic Marble",
+    description: "Luxurious swirling paint mixture with metallic gold veins and rich glossy turquoise, violet, and white shades.",
+    category: "Abstract & Geometric",
+    promptEnhancement: ", fluid acrylic paint pour art, swirling glossy marble textures, glistening metallic gold veins, liquid turquoise and violet colors, abstract expressionism, luxurious and elegant surface",
+    icon: "Droplet",
+    examplePrompt: "A beautiful abstract painting resembling deep ocean water currents with gold dust"
+  },
+  {
+    id: "neomorphism-ui",
+    name: "Neomorphic Soft 3D",
+    description: "Clean modern design using soft, extruded 3D bevels, elegant monochromatic shadows, and a minimalist tactile feel.",
+    category: "Abstract & Geometric",
+    promptEnhancement: ", modern neomorphism 3D rendering, incredibly soft extruded physical shapes, clean monochrome slate-gray backdrop, soft bevels and shadows, highly tactile minimalist interface design",
+    icon: "Layers",
+    examplePrompt: "A floating minimalist cube with soft rounded corners rising from a matching smooth surface"
+  },
+  {
+    id: "low-poly-3d",
+    name: "Low-Poly Papercraft",
+    description: "Charming angular 3D style using faceted flat-shaded triangular faces, mimicking geometric paper foldings.",
+    category: "Abstract & Geometric",
+    promptEnhancement: ", low-poly 3D modeling, sharp faceted triangular faces, origami paper foldings style, flat shaded geometries, clean solid colors, miniature stylized diorama, dramatic studio lighting",
+    icon: "Box",
+    examplePrompt: "A cute low-poly orange fox sitting under a blocky green pine tree"
+  },
+  {
+    id: "holographic-foil",
+    name: "Iridescent Chrome Foil",
+    description: "Mesmerizing metallic rainbow foil sheets with fluid chrome ripples that reflect shifting pastel colors.",
+    category: "Abstract & Geometric",
+    promptEnhancement: ", holographic iridescent foil texture, liquid metallic chrome reflections, shifting pastel rainbow gradients, highly reflective surface, ultra-modern futuristic luxury design",
+    icon: "Sparkles",
+    examplePrompt: "A floating metallic rose petal made of shifting liquid rainbow chrome foil"
+  },
+  {
+    id: "vaporwave-glitch",
+    name: "Vaporwave Glitch Art",
+    description: "Distorted 90s digital art featuring purple and magenta hues, classical Greek bust outlines, and video static scanlines.",
+    category: "Abstract & Geometric",
+    promptEnhancement: ", 1990s vaporwave aesthetic glitch art, chromatic aberration magenta and cyan outlines, retro classical Greek bust statue, computer screen scanlines, vaporous nostalgic 3D space",
+    icon: "Activity",
+    examplePrompt: "A digital glitch portal in a pink swimming pool surrounded by green palm trees"
+  },
+  {
+    id: "brutalist-poster",
+    name: "Swiss Brutalist Poster",
+    description: "Raw and high-contrast style using gritty halftone textures, thick solid red and black ink, and heavy grid layouts.",
+    category: "Abstract & Geometric",
+    promptEnhancement: ", Swiss brutalist graphic design poster, high contrast red and black ink, heavy halftone grain, solid block shapes, raw concrete texture, bold industrial typography layout",
+    icon: "Layout",
+    examplePrompt: "An abstract high-contrast industrial eye graphic printed on weathered gray paper"
+  },
+  {
+    id: "voronoi-cell",
+    name: "Voronoi Computational Web",
+    description: "Elegant mathematical cell structures resembling dragonfly wings or cracked mud, illuminated by neon borders.",
+    category: "Abstract & Geometric",
+    promptEnhancement: ", abstract voronoi cell network, clean computational geometry, glowing orange and cyan neon borders, intricate dark honeycomb pattern, mathematical generative art",
+    icon: "Workflow",
+    examplePrompt: "A beautiful abstract sculpture made of interlocking glowing voronoi geometric cells"
+  },
+  {
+    id: "sacred-geometry",
+    name: "Sacred Golden Mandala",
+    description: "Intricate golden ratio lines, overlapping circles, and perfect geometric mandalas over a deep cosmic sky.",
+    category: "Abstract & Geometric",
+    promptEnhancement: ", sacred geometry vector art, glowing gold thin lines, perfect geometric golden ratio spiral, intricate cosmic mandala, deep space background with stars, spiritual divine masterwork",
+    icon: "Compass",
+    examplePrompt: "A majestic gold flower of life symbol glowing above a starry dark blue galaxy"
+  },
+
+  // Cute & Whimsical
+  {
+    id: "chibi-clay",
+    name: "Chibi Claymation",
+    description: "Chubby and cute clay figurines with realistic clay thumbprint textures and soft warm studio lights.",
+    category: "Cute & Whimsical",
+    promptEnhancement: ", cute chibi claymation character, handmade clay model, realistic micro-fingerprint and clay textures, soft cozy studio lighting, adorable round features, Pixar shorts style",
+    icon: "Smile",
+    examplePrompt: "An adorable chubby little green frog wearing a miniature yellow raincoat, made of clay"
+  },
+  {
+    id: "kawaii-pastel",
+    name: "Kawaii Pastel Cartoon",
+    description: "Incredibly cute Japanese-style illustrations with smiling faces, round cheeks, and soft pastel pink and mint shades.",
+    category: "Cute & Whimsical",
+    promptEnhancement: ", cute kawaii Japanese illustration, adorable smiling characters, blushing pink cheeks, soft pastel mint and strawberry pink colors, clean simple vectors, cheerful happy atmosphere",
+    icon: "Heart",
+    examplePrompt: "A happy smiling piece of toast with a little pat of butter wearing a tiny red bowtie"
+  },
+  {
+    id: "crochet-plush",
+    name: "Cozy Crochet Plushie",
+    description: "Cozy handmade yarn toys with visible wool stitches, fuzzy fiber details, and a rustic wooden floor backdrop.",
+    category: "Cute & Whimsical",
+    promptEnhancement: ", handmade cozy crochet plushie toy, detailed woolen knit stitches, fuzzy yarn fibers, adorable black bead eyes, soft lighting, resting on a warm rustic wooden floor",
+    icon: "Smile",
+    examplePrompt: "A cute little crocheted orange octopus with a happy tiny stitched smile"
+  },
+  {
+    id: "felted-wool",
+    name: "Felted Needle-Wool",
+    description: "Fluffy and soft needle-felted animal toys made of condensed organic wool, featuring charming soft fuzz outlines.",
+    category: "Cute & Whimsical",
+    promptEnhancement: ", needle-felted wool miniature animal, fluffy soft felt texture, organic fuzzy wool outline, adorable hand-crafted look, cozy soft ambient lighting",
+    icon: "Award",
+    examplePrompt: "A tiny fluffy needle-felted penguin holding a tiny red felt heart"
+  },
+  {
+    id: "candy-kingdom",
+    name: "Candy Cane Land",
+    description: "Fairytale landscape built out of gingerbread cottages, soft marshmallow clouds, and sparkling gumdrop hills.",
+    category: "Cute & Whimsical",
+    promptEnhancement: ", magical landscape made entirely of candy, cute gingerbread houses, fluffy white marshmallow clouds, red candy cane trees, glistening sugar gumdrop mountains, sweet cozy fairytale art",
+    icon: "IceCream",
+    examplePrompt: "A small river of sparkling chocolate flowing through hills of pink cotton candy"
+  },
+  {
+    id: "isometric-diorama",
+    name: "Miniature Cubic World",
+    description: "Cute 3D cubic diorama placed on a wooden block, showcasing tiny detailed rooms and warm ambient window lights.",
+    category: "Cute & Whimsical",
+    promptEnhancement: ", cute 3D isometric diorama on a wooden base, miniature detailed room scene, warm cozy interior lighting, stylized tiny furniture, adorable digital art, beautiful toy-like composition",
+    icon: "Box",
+    examplePrompt: "A miniature library cubic world with tiny bookshelves, a green armchair, and a tiny fireplace"
+  },
+  {
+    id: "sleepy-dreamy",
+    name: "Sleepy Starry Cloud",
+    description: "Dreamy sleeping animal floating on a fluffy cloud bed, surrounded by hanging gold paper stars and a yellow moon.",
+    category: "Cute & Whimsical",
+    promptEnhancement: ", dreamy whimsical sleep illustration, sleeping cute animal on a fluffy glowing cloud, hanging golden paper stars, giant glowing crescent moon, soft dark blue night, cozy cozy fantasy",
+    icon: "Moon",
+    examplePrompt: "A cute sleepy kitten curled up sleeping on a big smiling yellow crescent moon in the stars"
+  },
+  {
+    id: "kawaii-boba",
+    name: "Happy Boba Splashes",
+    description: "Adorable bubble tea cup with cute eyes and little hands, with milk tea splashes and rainbow sprinkles.",
+    category: "Cute & Whimsical",
+    promptEnhancement: ", cute kawaii bubble tea cup cartoon, big happy eyes, splashing sweet milk tea, floating black tapioca pearls, colorful rainbow sprinkles, high energy whimsical digital art",
+    icon: "Smile",
+    examplePrompt: "A cute cartoon strawberry boba cup smiling and wearing a little flower on its head"
+  },
+  {
+    id: "whimsical-garden",
+    name: "Silly Talking Garden",
+    description: "Cheerful flower characters with googly eyes and wide smiles, whispering under bright sunbeams.",
+    category: "Cute & Whimsical",
+    promptEnhancement: ", whimsical talking garden illustration, friendly smiling flower characters with big expressive eyes, bright magical sunbeams, giant crawling cute ladybugs, cheerful children's book art",
+    icon: "Smile",
+    examplePrompt: "A pair of yellow sunflowers wearing sunglasses and smiling happily at each other"
+  },
+  {
+    id: "pocket-adventure",
+    name: "Tiny Hero Mouse",
+    description: "Tiny mouse explorer wearing a green leaf cape, carrying a wooden toothpick sword, looking brave.",
+    category: "Cute & Whimsical",
+    promptEnhancement: ", cute pocket-sized fantasy adventure, tiny mouse warrior wearing a green oak leaf cape, holding a toothpick sword, standing bravely on a mossy stone, soft dreamy forest light",
+    icon: "Compass",
+    examplePrompt: "A tiny mouse explorer looking up in awe at a giant red apple sitting on the forest floor"
+  },
+
+  // Architectural & Spaces
+  {
+    id: "brutalist-concrete",
+    name: "Brutalist Concrete Slab",
+    description: "Monumental, raw concrete block buildings with strong geometric lines, deep shadows, and an atmospheric cloudy sky.",
+    category: "Architectural & Spaces",
+    promptEnhancement: ", brutalist monumental architecture, massive raw concrete slab blocks, heavy shadows, geometric clean lines, dramatic perspective, moody overcast cloudy sky, hyper-realistic architectural photo",
+    icon: "Home",
+    examplePrompt: "A minimalist concrete library building with a giant round window surrounded by water"
+  },
+  {
+    id: "gothic-cathedral",
+    name: "Gothic Stone Cathedral",
+    description: "Intricate stone spires, soaring flying buttresses, and dusty golden sunbeams piercing a giant stained glass window.",
+    category: "Architectural & Spaces",
+    promptEnhancement: ", dramatic gothic cathedral interior, majestic stone arches and gargoyles, colossal stained glass rose window, volumetric dusty golden light beams, ancient epic atmosphere",
+    icon: "Castle",
+    examplePrompt: "A majestic ancient stone cathedral courtyard overgrown with climbing green ivy"
+  },
+  {
+    id: "mid-century-modern",
+    name: "Mid-Century Modern Loft",
+    description: "Warm teak wood panelling, minimalist retro furniture, a hanging fireplace, and large windows with potted palms.",
+    category: "Architectural & Spaces",
+    promptEnhancement: ", mid-century modern living room interior, warm teak wood walls, orange and green Eames chairs, large floor-to-ceiling glass windows, stylish atomic fireplace, sunset cozy lighting",
+    icon: "Tv",
+    examplePrompt: "A beautiful retro 1960s living room looking out at a swimming pool and tall palm trees"
+  },
+  {
+    id: "scandinavian-minimalist",
+    name: "Nordic Minimalist Room",
+    description: "Sleek bright white walls, light ash wood furniture, soft linen blankets, and a warm flickering candle glow.",
+    category: "Architectural & Spaces",
+    promptEnhancement: ", Scandinavian minimalist interior design, bright white walls, natural light ash wood, soft cozy gray sheepskin throw, warm flickering candles, clean spacious architectural photo, hyper-cozy",
+    icon: "Home",
+    examplePrompt: "A quiet minimalist bedroom with a large window showing a gentle snowy forest outside"
+  },
+  {
+    id: "bio-organic-arch",
+    name: "Bio-Organic Treehouse",
+    description: "Futuristic houses grown organically from colossal living redwood trees, winding spiral stairs, and green vines.",
+    category: "Architectural & Spaces",
+    promptEnhancement: ", bio-organic architectural fantasy, modern glass house integrated inside a massive living tree trunk, winding wooden steps, climbing green vines, beautiful dappled canopy sunlight",
+    icon: "Leaf",
+    examplePrompt: "A futuristic eco-friendly home suspended high in a forest canopy made of curved bamboo"
+  },
+  {
+    id: "art-deco-palace",
+    name: "Art Deco Brass Luxury",
+    description: "Stately golden columns, symmetrical brass geometric patterns, luxury black marble floors, and deep velvet textures.",
+    category: "Architectural & Spaces",
+    promptEnhancement: ", opulent Art Deco grand lobby, symmetrical gold and brass geometric wall grilles, polished black marble floor with reflections, dark green velvet sofas, luxurious Great Gatsby aesthetic",
+    icon: "Award",
+    examplePrompt: "A luxurious Art Deco hotel bar shining with polished brass and warm amber lights"
+  },
+  {
+    id: "zen-garden-house",
+    name: "Zen Shoji Teahouse",
+    description: "Peaceful traditional Japanese house with sliding paper doors, a gravel rock garden, and blooming cherry blossoms.",
+    category: "Architectural & Spaces",
+    promptEnhancement: ", traditional Japanese zen tea house, sliding paper shoji doors, manicured sand rock garden, small pond with orange koi fish, blooming pink cherry blossom tree, tranquil peaceful morning light",
+    icon: "Sun",
+    examplePrompt: "A cozy wooden porch of a Japanese cottage facing a misty mountain pine forest"
+  },
+  {
+    id: "cyberpunk-loft",
+    name: "Cyberpunk Industrial Loft",
+    description: "Futuristic apartment with raw brick walls, exposed copper pipes, multi-colored neon signs, and rain-streaked windows.",
+    category: "Architectural & Spaces",
+    promptEnhancement: ", industrial cyberpunk loft interior, raw red brick wall, exposed pipes, glowing neon signs in pink and teal, sleek monitors, giant window overlooking a rainy futuristic neon city at night",
+    icon: "Zap",
+    examplePrompt: "A futuristic bedroom with neon tube lights, computer setups, and a view of skyscrapers"
+  },
+  {
+    id: "mediterranean-villa",
+    name: "Terracotta Sea Villa",
+    description: "Sun-bleached white stucco walls, terracotta tiled roofs, bright blue window shutters, and vibrant pink bougainvillea.",
+    category: "Architectural & Spaces",
+    promptEnhancement: ", stunning Mediterranean coastal villa, sun-baked white plaster walls, warm terracotta tiles, vivid blue doors, sprawling hot pink bougainvillea flowers, overlooking a bright turquoise ocean, sunny summer",
+    icon: "Compass",
+    examplePrompt: "A cozy stone patio with white wooden chairs looking at a beautiful Greek island sunset"
+  },
+  {
+    id: "cozy-treehouse-cabin",
+    name: "Redwood Treehouse Cabin",
+    description: "Charming rustic log cabin built high in redwood trees, connected by a rope bridge, with warm hanging lanterns.",
+    category: "Architectural & Spaces",
+    promptEnhancement: ", rustic redwood treehouse cabin, dark cedar log work, glowing orange hanging lanterns, rope suspension bridge, dense forest misty background, cozy fairytale hideaway, warm ambient photo",
+    icon: "Home",
+    examplePrompt: "A cozy treehouse cabin at twilight with a warm fire glowing inside and smoke rising from the chimney"
   }
 ];
 
