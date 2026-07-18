@@ -9,7 +9,7 @@ dotenv.config();
 
 // Create Express app
 const app = express();
-const PORT = Number.parseInt(process.env.PORT || "3000", 10);
+const PORT = 3000;
 
 // Enable JSON body parsing with a limit of 10MB to accommodate images if needed
 app.use(express.json({ limit: "10mb" }));
@@ -318,6 +318,64 @@ app.post("/api/generate-video", async (req, res) => {
   }
 });
 
+// Helper function to build a mock Operation object compatible with the @google/genai SDK
+function buildMockOperation(operationName: string) {
+  return {
+    name: operationName,
+    _fromAPIResponse({ apiResponse }: any) {
+      const done = apiResponse.done;
+      const error = apiResponse.error;
+      const rawResponse = apiResponse.response;
+      
+      let response = undefined;
+      if (rawResponse) {
+        const mldevResponse = rawResponse.generateVideoResponse;
+        if (mldevResponse) {
+          const samples = mldevResponse.generatedSamples || mldevResponse.generatedVideos;
+          if (samples && Array.isArray(samples)) {
+            response = {
+              generatedVideos: samples.map((sample: any) => {
+                const video = sample.video;
+                return {
+                  video: {
+                    uri: video?.uri || video?.gcsUri,
+                    mimeType: video?.mimeType || video?.encoding
+                  }
+                };
+              })
+            };
+          }
+        } else {
+          const samples = rawResponse.videos || rawResponse.generatedVideos || rawResponse.generatedSamples;
+          if (samples && Array.isArray(samples)) {
+            response = {
+              generatedVideos: samples.map((sample: any) => {
+                const video = sample.video || sample._self || sample;
+                return {
+                  video: {
+                    uri: video?.uri || video?.gcsUri,
+                    mimeType: video?.mimeType || video?.encoding
+                  }
+                };
+              })
+            };
+          } else {
+            response = rawResponse;
+          }
+        }
+      }
+
+      return {
+        name: apiResponse.name || operationName,
+        metadata: apiResponse.metadata,
+        done: done !== undefined ? done : false,
+        error: error,
+        response: response
+      };
+    }
+  };
+}
+
 // Poll the status of a video generation operation
 app.post("/api/video-status", async (req, res) => {
   try {
@@ -328,7 +386,7 @@ app.post("/api/video-status", async (req, res) => {
 
     const ai = getGeminiClient();
     const updated = await (ai.operations as any).getVideosOperation({
-      operation: { name: operationName }
+      operation: buildMockOperation(operationName)
     });
 
     return res.json({
@@ -360,7 +418,7 @@ app.get("/api/video-download", async (req, res) => {
 
     const ai = getGeminiClient();
     const updated = await (ai.operations as any).getVideosOperation({
-      operation: { name: operationName }
+      operation: buildMockOperation(operationName)
     });
 
     const uri = updated.response?.generatedVideos?.[0]?.video?.uri;
